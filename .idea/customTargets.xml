@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="84faa2cd-b652-4e86-9695-f356b4f3f72a" name="Clang Static Analyze" defaultType="TOOL">
+      <configuration id="e0141acd-150b-4b86-bede-95512accd207" name="Clang Static Analyze" toolchainName="Make Clang">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_Clang Static Analyzer" />
+        </build>
+      </configuration>
+    </target>
+  </component>
+</project>

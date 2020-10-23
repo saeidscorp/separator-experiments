@@ -1,0 +1,9 @@
+<toolSet name="External Tools">
+  <tool name="Clang Static Analyzer" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="true" showConsoleOnStdErr="true" synchronizeAfterRun="true">
+    <exec>
+      <option name="COMMAND" value="scan-build" />
+      <option name="PARAMETERS" value="scan-build --use-cc /usr/lib/llvm/10/bin/clang --use-c++ /usr/lib/llvm/10/bin/clang++ --use-analyzer /usr/lib/llvm/10/bin/clang-10 -v -k -V ninja" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Projects/Traffic-Analysis/Experiments/separator/build/debug" />
+    </exec>
+  </tool>
+</toolSet>
