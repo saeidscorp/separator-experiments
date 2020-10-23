@@ -40,6 +40,8 @@ namespace model {
 
         Edge *connect(int from_id, int to_id, double max_speed, double eta = 0, std::string name = std::string());
 
+        std::string dotString();
+
     };
 
 }

@@ -18,8 +18,10 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_link_options(--coverage)
 endif ()
 
+add_subdirectory(lib/random)
 
-add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp model/Graph.cpp)
+add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp model/Graph.cpp gen/LinearGenerator.cpp gen/LinearGenerator.hpp)
+target_link_libraries(separator effolkronium_random)
 
 
 # colorful ninja

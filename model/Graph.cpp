@@ -3,6 +3,7 @@
 //
 
 #include "Graph.hpp"
+#include <sstream>
 
 using namespace model;
 
@@ -59,4 +60,29 @@ Edge *Graph::connect(int from_id, int to_id, double max_speed, double eta, std::
     auto from_node = _node_map->at(from_id);
     auto to_node = _node_map->at(to_id);
     return connect(from_node, to_node, max_speed, eta, name);
+}
+
+std::string Graph::dotString() {
+    std::stringstream ss;
+    ss << "graph {" << std::endl;
+    ss << "    " << "rankdir=\"LR\";" << std::endl;
+
+    for (auto iter = _node_map->begin(); iter != _node_map->end(); iter++) {
+        auto node = iter->second;
+        std::string *name = node->getName();
+        if (name->empty()) continue;
+
+        ss << "    " << node->getId();
+        ss << " [label=\"" << name << "\"];" << std::endl;
+    }
+
+    for (auto iter = _edge_map->begin(); iter != _edge_map->end(); iter++) {
+        auto edge = iter->second;
+        ss << "    ";
+        ss << edge->getFrom()->getId() << " -- " << edge->getTo()->getId();
+        ss << " [label=\"" << edge->getEta() << "\"];" << std::endl;
+    }
+
+    ss << "}" << std::endl;
+    return ss.str();
 }

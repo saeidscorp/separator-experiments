@@ -2,16 +2,21 @@
 #include <iostream>
 
 #include "model/model.hpp"
+#include "gen/LinearGenerator.hpp"
 
 int main() {
     std::cout << "Simple benchmark for randomized node selection" << std::endl;
 
-    auto g = new model::Graph;
+    /*auto g = new model::Graph;
 
     auto n1 = g->createNode(10, 20, std::string("node_1"));
     auto n2 = g->createNode(0, -10, std::string("node_2"));
 
-    g->connect(n1, n2, 100, 0, std::string("edge_1"));
+    g->connect(n1, n2, 100, 0, std::string("edge_1"));*/
+
+    auto linear_gen = new gen::LinearGenerator;
+    auto rand_g = linear_gen->generate();
+    std::cout << rand_g->dotString() << std::endl;
 
     return 0;
 }
