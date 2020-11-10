@@ -9,13 +9,16 @@ using Random = effolkronium::random_static;
 
 using namespace gen;
 
-LinearGenerator::LinearGenerator(int length) {
+template<bool bidirectional_graph>
+LinearGenerator<bidirectional_graph>::LinearGenerator(int length) {
     _length = length;
 }
 
-LinearGenerator::LinearGenerator() : _length(10) {}
+template<bool bidirectional_graph>
+LinearGenerator<bidirectional_graph>::LinearGenerator() : _length(10) {}
 
-model::Graph *LinearGenerator::generate() {
+template<bool bidirectional_graph>
+model::Graph<bidirectional_graph> *LinearGenerator<bidirectional_graph>::generate() {
     auto graph = new model::Graph;
 
     model::Node *prev_node = nullptr;
@@ -27,5 +30,6 @@ model::Graph *LinearGenerator::generate() {
         }
         prev_node = new_node;
     }
+
     return graph;
 }

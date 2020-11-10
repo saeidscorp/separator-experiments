@@ -13,6 +13,7 @@
 
 namespace model {
 
+    template<bool bidirectional_graph = true>
     class Graph {
     private:
         std::map<int, Node *> *_node_map;
@@ -32,18 +33,34 @@ namespace model {
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
+        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to);
 
+        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id);
 
+        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to, double max_speed, double eta = 0, std::string name = std::string());
 
+        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id, double max_speed, double eta = 0, std::string name = std::string());
+
+        std::vector<model::Node *> getNodes();
+
+        std::vector<int> getNodeIds();
+
+        std::vector<model::Edge *> getEdges();
+
+        std::vector<int> getEdgeIds();
+
+        std::optional<model::Node *> getNode(int id);
 
         std::string dotString();
 
     };
 
 }
+
+#include "Graph.cpp"
 
 #endif //SEPARATOR_GRAPH_HPP

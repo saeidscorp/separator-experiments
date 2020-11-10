@@ -23,6 +23,7 @@ namespace model {
         std::string *_name;
         std::vector<Edge *> *_edges;
         std::map<int, Node *> *_neighs;
+        std::map<Node *, Edge *> *_edge_map;
 
         void addNeigh(Node *other);
 
@@ -52,11 +53,17 @@ namespace model {
 
         void setName(std::string name);
 
-        [[nodiscard]] const std::vector<Edge *> *getEdges() const;
+        [[nodiscard]] std::vector<Edge *> getEdges() const;
 
-        [[nodiscard]] std::map<int, Node *> *getNeighs() const;
+        [[nodiscard]] std::vector<Node *> getNeighs() const;
 
-        void addEdge(Node *other);
+        Edge *connect(Node *other);
+
+        Node *connect(Edge *existingEdge);
+
+        Edge *getEdgeOf(Node *node);
+
+        static double distance(Node *one, Node *another);
 
     };
 

@@ -17,6 +17,7 @@ namespace model {
         int _id;
         double _max_speed;
         double _eta; /* the goal of queries */
+        bool directed;
 
         std::string *_name;
         Node *_from;
@@ -25,15 +26,15 @@ namespace model {
         void connectFromTo();
 
     public:
-        Edge(Node *from, Node *to);
+        Edge(Node *from, Node *to, bool directed = true);
 
-        Edge(Node *from, Node *to, int id);
+        Edge(Node *from, Node *to, int id, bool directed = true);
 
-        Edge(Node *from, Node *to, double maxSpeed, double eta);
+        Edge(Node *from, Node *to, double maxSpeed, double eta, bool directed = true);
 
-        Edge(Node *from, Node *to, int id, double maxSpeed, double eta);
+        Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed = true);
 
-        Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name);
+        Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed = true);
 
         [[nodiscard]] int getId() const;
 
@@ -59,6 +60,7 @@ namespace model {
 
         void setTo(Node *to);
 
+        [[nodiscard]] Node *getOther(Node *thisOne);
     };
 
 }

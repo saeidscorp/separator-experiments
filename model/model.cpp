@@ -6,10 +6,22 @@
 
 using namespace model;
 
-void Node::addEdge(Node *other) {
-    Edge *e = new Edge(this, other);
-    _edges->push_back(e);
-    _neighs->insert({other->getId(), other});
+void Node::addEdge(Edge *edge) {
+    _edges->push_back(edge);
+    auto other = edge->getOther(this);
+    addNeigh(other);
+    _edge_map->insert({other, edge});
+}
+
+Edge *Node::connect(Node *other) {
+    Edge *edge = new Edge(this, other);
+    addEdge(edge);
+    return edge;
+}
+
+Node *Node::connect(Edge *existingEdge) {
+    addEdge(existingEdge);
+    return existingEdge->getOther(this);
 }
 
 void Edge::connectFromTo() {

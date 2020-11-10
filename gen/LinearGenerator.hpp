@@ -8,6 +8,8 @@
 #include "../model/model.hpp"
 
 namespace gen {
+
+    template<bool bidirectional_graph>
     class LinearGenerator {
     private:
 
@@ -18,9 +20,10 @@ namespace gen {
 
         LinearGenerator(int length);
 
-        model::Graph *generate();
+        model::Graph<bidirectional_graph> *generate();
     };
 }
 
+#include "LinearGenerator.cpp"
 
 #endif //SEPARATOR_LINEARGENERATOR_HPP

@@ -4,20 +4,22 @@
 
 #include "Edge.hpp"
 
+#include <stdexcept>
+
 using namespace model;
 
-Edge::Edge(Node *from, Node *to) : Edge(from, to, 0) {}
+Edge::Edge(Node *from, Node *to, bool directed) : Edge(from, to, 0, directed) {}
 
-Edge::Edge(Node *from, Node *to, int id) : Edge(from, to, id, 0, 0) {}
+Edge::Edge(Node *from, Node *to, int id, bool directed) : Edge(from, to, id, 0, 0, directed) {}
 
-Edge::Edge(Node *from, Node *to, double maxSpeed, double eta) : Edge(from, to, 0, maxSpeed, eta, nullptr) {}
+Edge::Edge(Node *from, Node *to, double maxSpeed, double eta, bool directed) :
+        Edge(from, to, 0, maxSpeed, eta, nullptr, directed) {}
 
-Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta) : Edge(from, to, id, maxSpeed, eta, nullptr) {}
+Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed) :
+        Edge(from, to, id, maxSpeed, eta, nullptr, directed) {}
 
-Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name) : _id(id),
-                                                                                           _max_speed(maxSpeed),
-                                                                                           _eta(eta), _name(name),
-                                                                                           _from(from), _to(to) {}
+Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed) :
+        _id(id), _max_speed(maxSpeed), _eta(eta), _name(name), _from(from), _to(to), directed(directed) {}
 
 int Edge::getId() const {
     return _id;
@@ -65,5 +67,13 @@ Node *Edge::getTo() const {
 
 void Edge::setTo(Node *to) {
     _to = to;
+}
+
+Node *Edge::getOther(Node *thisOne) {
+    if (_from == thisOne)
+        return _to;
+    if (_to == thisOne)
+        return _from;
+    throw std::runtime_error(std::string("given node is not part of the edge."));
 }
 
