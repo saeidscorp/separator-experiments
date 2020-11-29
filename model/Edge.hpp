@@ -17,7 +17,7 @@ namespace model {
         int _id;
         double _max_speed;
         double _eta; /* the goal of queries */
-        bool directed;
+        bool _directed;
 
         std::string *_name;
         Node *_from;
@@ -35,6 +35,8 @@ namespace model {
         Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed = true);
 
         Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed = true);
+
+        Edge(const Edge& other);
 
         [[nodiscard]] int getId() const;
 

@@ -19,10 +19,22 @@ Graph<bidirectional_graph>::Graph() {
 }
 
 template<bool bidirectional_graph>
-Node *Graph<bidirectional_graph>::createNode() {
-    auto node = new Node(_next_node());
+void Graph<bidirectional_graph>::add_node(Node *node) {
     _node_map->insert({node->getId(), node});
+}
+
+template<bool bidirectional_graph>
+Node *Graph<bidirectional_graph>::createNode() {
+    auto node = new Node(_next_node_id());
+    add_node(node);
     return node;
+}
+
+template<bool bidirectional_graph>
+Node *Graph<bidirectional_graph>::createNode(Node *node) {
+    auto copy = new Node(*node);
+    add_node(copy);
+    return copy;
 }
 
 template<bool bidirectional_graph>
@@ -35,25 +47,46 @@ Node *Graph<bidirectional_graph>::createNode(double lon, double lat, std::string
 }
 
 template<bool bidirectional_graph>
-int Graph<bidirectional_graph>::_next_node() {
+int Graph<bidirectional_graph>::_next_node_id() {
     return ++_current_node_id;
 }
 
 template<bool bidirectional_graph>
-int Graph<bidirectional_graph>::_next_edge() {
+int Graph<bidirectional_graph>::_next_edge_id() {
     return ++_current_edge_id;
+}
+
+template<bool bidirectional_graph>
+template<bool bidirectional>
+void Graph<bidirectional_graph>::add_edge(Edge *edge) {
+    auto from = edge->getFrom();
+    auto to = edge->getTo();
+    from->connect(edge);
+    if constexpr (bidirectional) {
+        to->connect(edge);
+    }
+    _edge_map->insert({edge->getId(), edge});
 }
 
 template<bool bidirectional_graph>
 template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to) {
     auto edge = from->connect(to);
-    if constexpr (bidirectional) {
-        to->connect(edge);
-    }
-    edge->setId(_next_edge());
-    _edge_map->insert({edge->getId(), edge});
+    edge->setId(_next_edge_id());
+    add_edge<bidirectional>(edge);
     return edge;
+}
+
+template<bool bidirectional_graph>
+template<bool bidirectional>
+Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, Edge *edge) {
+    if (_edge_map->contains(edge->getId()))
+        return edge;
+    auto copy = new Edge(*edge);
+    copy->setFrom(from);
+    copy->setTo(to);
+    add_edge<bidirectional>(copy);
+    return copy;
 }
 
 template<bool bidirectional_graph>
@@ -83,7 +116,7 @@ Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id, double max_spe
 }
 
 template<bool bidirectional_graph>
-std::string Graph<bidirectional_graph>::dotString() {
+std::string Graph<bidirectional_graph>::dotString() const {
     std::stringstream ss;
     ss << "graph {" << std::endl;
     ss << "    " << "rankdir=\"LR\";" << std::endl;
@@ -109,31 +142,69 @@ std::string Graph<bidirectional_graph>::dotString() {
 }
 
 template<bool bidirectional_graph>
-std::vector<model::Node *> Graph<bidirectional_graph>::getNodes() {
+std::vector<model::Node *> Graph<bidirectional_graph>::getNodes() const {
     return util::extract_values(*_node_map);
 }
 
 template<bool bidirectional_graph>
-std::vector<int> Graph<bidirectional_graph>::getNodeIds() {
+std::vector<int> Graph<bidirectional_graph>::getNodeIds() const {
     return util::extract_keys(*_node_map);
 }
 
 template<bool bidirectional_graph>
-std::vector<model::Edge *> Graph<bidirectional_graph>::getEdges() {
+std::vector<model::Edge *> Graph<bidirectional_graph>::getEdges() const {
     return util::extract_values(*_edge_map);
 }
 
 template<bool bidirectional_graph>
-std::vector<int> Graph<bidirectional_graph>::getEdgeIds() {
+std::vector<int> Graph<bidirectional_graph>::getEdgeIds() const {
     return util::extract_keys(*_edge_map);
 }
 
 template<bool bidirectional_graph>
-std::optional<model::Node *> Graph<bidirectional_graph>::getNode(int id) {
+std::optional<model::Node *> Graph<bidirectional_graph>::getNode(int id) const {
     auto it = _node_map->find(id);
     if (it != _node_map->end())
         return {it->second};
     return {};
+}
+
+template<bool bidirectional_graph>
+std::optional<model::Edge *> Graph<bidirectional_graph>::getEdge(int id) const {
+    auto it = _edge_map->find(id);
+    if (it != _edge_map->end())
+        return {it->second};
+    return {};
+}
+
+template<bool bidirectional_graph>
+Graph<bidirectional_graph>::Graph(const Graph<bidirectional_graph> &other)
+        : _current_node_id(other._current_node_id),
+          _current_edge_id(other._current_edge_id){
+
+    _node_map = new std::map<int, Node *>;
+    _edge_map = new std::map<int, Edge *>;
+
+    std::map<Node *, Node *> visited_nodes;
+
+    auto dfs = util::recursive_lambda([&visited_nodes, this](auto &&dfs, Node *node) -> Node * {
+        if (visited_nodes.contains(node))
+            return visited_nodes[node];
+
+        auto our_node = createNode(node);
+        visited_nodes.emplace(node, our_node);
+
+        for (auto edge : node->getEdges()) {
+            auto neigh = edge->getOther(node);
+            auto our_neigh = dfs(neigh);
+            connect(our_node, our_neigh, edge);
+        }
+
+        return our_node;
+    });
+
+    for (auto node : other.getNodes())
+        dfs(node);
 }
 
 //namespace model {

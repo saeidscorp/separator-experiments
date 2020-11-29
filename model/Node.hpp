@@ -37,6 +37,8 @@ namespace model {
 
         Node(int id, double lon, double lat, std::string name);
 
+        Node(const Node& other);
+
         [[nodiscard]] int getId() const;
 
         void setId(int id);

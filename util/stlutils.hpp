@@ -73,6 +73,26 @@ namespace util {
         return {it, inserted};
     }
 
+
+    template <class F>
+    struct y_combinator {
+        F f; // the lambda will be stored here
+
+        // a forwarding operator():
+        template <class... Args>
+        decltype(auto) operator()(Args&&... args) const {
+            // we pass ourselves to f, then the arguments.
+            // the lambda should take the first argument as `auto&& recurse` or similar.
+            return f(*this, std::forward<Args>(args)...);
+        }
+    };
+
+    // helper function that deduces the type of the lambda:
+    template <class F>
+    y_combinator<std::decay_t<F>> recursive_lambda(F&& f) {
+        return {std::forward<F>(f)};
+    }
+
 }
 
 #endif //SEPARATOR_STLUTILS_HPP

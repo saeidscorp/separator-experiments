@@ -13,7 +13,7 @@ using namespace model;
 
 Node::Node(int id) : Node(id, 0, 0) {}
 
-Node::Node(int id, double lon, double lat) : Node(id, lon, lat, std::string("")) {}
+Node::Node(int id, double lon, double lat) : Node(id, lon, lat, std::string()) {}
 
 Node::Node(int id, double lon, double lat, std::string name) : _id(id), _lon(lon), _lat(lat),
                                                                _name(new std::string(std::move(name))) {
@@ -74,4 +74,11 @@ double Node::distance(Node *one, Node *another) {
     auto dx = one->getLon() - another->getLon();
     auto dy = one->getLat() - another->getLat();
     return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));
+}
+
+Node::Node(const Node &other) : _id(other._id), _lon(other._lon), _lat(other._lat),
+                                _name(new std::string(*other._name)) {
+    _edges = new std::vector<Edge *>;
+    _neighs = new std::map<int, Node *>;
+    _edge_map = new std::map<Node *, Edge *>;
 }

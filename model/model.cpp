@@ -7,8 +7,13 @@
 using namespace model;
 
 void Node::addEdge(Edge *edge) {
-    _edges->push_back(edge);
     auto other = edge->getOther(this);
+
+    // fixme: assert that the values are also the same (is that even necessary?)
+    if (_edge_map->contains(other))
+        return;
+
+    _edges->push_back(edge);
     addNeigh(other);
     _edge_map->insert({other, edge});
 }

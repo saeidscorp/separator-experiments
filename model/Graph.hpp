@@ -22,19 +22,35 @@ namespace model {
         int _current_node_id;
         int _current_edge_id;
 
-        int _next_node();
+        int _next_node_id();
 
-        int _next_edge();
+        int _next_edge_id();
+
+        void add_node(Node *node);
+
+        template<bool bidirectional = bidirectional_graph>
+        void add_edge(Edge *edge);
 
     public:
         Graph();
 
+        Graph(const Graph& other);
+
         Node *createNode();
+
+        Node *createNode(Node *node);
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
+        void addNode(Node *node);
+
+        void addEdge(Edge *edge);
+
         template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to);
+
+        template<bool bidirectional = bidirectional_graph>
+        Edge *connect(Node *from, Node *to, Edge *edge);
 
         template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id);
@@ -45,17 +61,19 @@ namespace model {
         template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id, double max_speed, double eta = 0, std::string name = std::string());
 
-        std::vector<model::Node *> getNodes();
+        [[nodiscard]] std::vector<model::Node *> getNodes() const;
 
-        std::vector<int> getNodeIds();
+        std::vector<int> getNodeIds() const;
 
-        std::vector<model::Edge *> getEdges();
+        std::vector<model::Edge *> getEdges() const;
 
-        std::vector<int> getEdgeIds();
+        std::vector<int> getEdgeIds() const;
 
-        std::optional<model::Node *> getNode(int id);
+        std::optional<model::Node *> getNode(int id) const;
 
-        std::string dotString();
+        std::optional<model::Edge *> getEdge(int id) const;
+
+        std::string dotString() const;
 
     };
 

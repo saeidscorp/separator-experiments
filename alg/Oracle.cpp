@@ -7,6 +7,7 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <cmath>
 
 #include "../util/stlutils.hpp"
 
@@ -88,18 +89,48 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 }
 
 template<bool bidirectional_graph>
-Oracle<bidirectional_graph>::Oracle(model::Graph<bidirectional_graph> *graph) : graph(graph), num_queries(0) {}
+Oracle<bidirectional_graph>::Oracle(model::Graph<bidirectional_graph> *graph) : num_queries(0), graph(graph) {}
 
 template<bool bidirectional_graph>
 query_result Oracle<bidirectional_graph>::query(model::endpoints ep) {
     num_queries++;
     util::map_value_default(frequencies, ep, [] (int c) { return c + 1; });
+    // todo: make this a part of Graph class and make it more robust
+    if (graph->getNode(ep.first->getId()) != ep.first ||
+        graph->getNode(ep.second->getId()) != ep.second) {
+        std::cerr << "query nodes are not in the oracle graph." << std::endl;
+        return {};
+    }
     return shortest_path(ep);
 }
 
 template<bool bidirectional_graph>
 query_result Oracle<bidirectional_graph>::query(model::Node *node1, model::Node *node2) {
     return query(model::endpoints{node1, node2});
+}
+
+template<bool bidirectional_graph>
+double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) {
+    auto other_graph = graph;
+
+    double sse = 0;
+    int edge_count = 0;
+
+    for (auto other_id : other_graph->getEdgeIds()) {
+        auto other_edge_o = other_graph->getEdge(other_id);
+        auto our_edge_o = this->graph->getEdge(other_id);
+
+        if (!other_edge_o || !our_edge_o)
+            throw std::runtime_error("Topologies or edge ids mismatch.");
+
+        auto other_edge = other_edge_o.value();
+        auto our_edge = our_edge_o.value();
+
+        sse += std::pow(other_edge->getEta() - our_edge->getEta(), 2);
+        edge_count++;
+    }
+
+    return sse / edge_count;
 }
 
 //namespace alg {

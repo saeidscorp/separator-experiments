@@ -13,13 +13,13 @@ Edge::Edge(Node *from, Node *to, bool directed) : Edge(from, to, 0, directed) {}
 Edge::Edge(Node *from, Node *to, int id, bool directed) : Edge(from, to, id, 0, 0, directed) {}
 
 Edge::Edge(Node *from, Node *to, double maxSpeed, double eta, bool directed) :
-        Edge(from, to, 0, maxSpeed, eta, nullptr, directed) {}
+        Edge(from, to, 0, maxSpeed, eta, new std::string(), directed) {}
 
 Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed) :
-        Edge(from, to, id, maxSpeed, eta, nullptr, directed) {}
+        Edge(from, to, id, maxSpeed, eta, new std::string(), directed) {}
 
 Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed) :
-        _id(id), _max_speed(maxSpeed), _eta(eta), _name(name), _from(from), _to(to), directed(directed) {}
+        _id(id), _max_speed(maxSpeed), _eta(eta), _directed(directed), _name(name), _from(from), _to(to) {}
 
 int Edge::getId() const {
     return _id;
@@ -77,3 +77,6 @@ Node *Edge::getOther(Node *thisOne) {
     throw std::runtime_error(std::string("given node is not part of the edge."));
 }
 
+Edge::Edge(const Edge &other) : _id(other._id), _max_speed(other._max_speed),
+                                _eta(other._eta), _directed(other._directed),
+                                _name(new std::string(*other._name)) {}

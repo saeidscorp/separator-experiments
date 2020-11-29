@@ -35,6 +35,8 @@ namespace alg {
 
         query_result query(model::Node *node1, model::Node *node2);
 
+        double similarity(model::Graph<bidirectional_graph> *graph);
+
     };
 }
 
