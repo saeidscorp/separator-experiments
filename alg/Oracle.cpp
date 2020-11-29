@@ -133,6 +133,11 @@ double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph>
     return sse / edge_count;
 }
 
+template<bool bidirectional_graph>
+model::Graph<bidirectional_graph> *Oracle<bidirectional_graph>::getGraph() const {
+    return graph;
+}
+
 //namespace alg {
 //    template class Oracle<true>;
 //    template class Oracle<false>;

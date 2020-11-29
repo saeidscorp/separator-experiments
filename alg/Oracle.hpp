@@ -37,6 +37,8 @@ namespace alg {
 
         double similarity(model::Graph<bidirectional_graph> *graph);
 
+        [[nodiscard]] model::Graph<bidirectional_graph> *getGraph() const;
+
     };
 }
 
