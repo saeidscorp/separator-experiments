@@ -23,7 +23,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
     };
 
 
-    typedef std::map<model::Node *, double> score_map;
+    typedef std::map<model::Node *, ETA> score_map;
 
     score_map g_score;
     score_map f_score;
@@ -42,7 +42,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 
     auto reconstruct_path = [&came_from](model::Node *current) {
         model::path total_path{current};
-        double total_eta = 0;
+        ETA total_eta = 0;
 
         while (came_from.contains(current)) {
             auto prev_edge = came_from[current];
@@ -56,7 +56,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 
 
     auto get_score = [](score_map *smap, model::Node *node) {
-        return smap->contains(node) ? smap->at(node) : std::numeric_limits<double>::max();
+        return smap->contains(node) ? smap->at(node) : std::numeric_limits<ETA>::max();
     };
 
 
@@ -92,6 +92,11 @@ template<bool bidirectional_graph>
 Oracle<bidirectional_graph>::Oracle(model::Graph<bidirectional_graph> *graph) : num_queries(0), graph(graph) {}
 
 template<bool bidirectional_graph>
+query_result Oracle<bidirectional_graph>::do_query(model::endpoints ep) {
+    return shortest_path(ep);
+}
+
+template<bool bidirectional_graph>
 query_result Oracle<bidirectional_graph>::query(model::endpoints ep) {
     num_queries++;
     util::map_value_default(frequencies, ep, [] (int c) { return c + 1; });
@@ -101,7 +106,7 @@ query_result Oracle<bidirectional_graph>::query(model::endpoints ep) {
         std::cerr << "query nodes are not in the oracle graph." << std::endl;
         return {};
     }
-    return shortest_path(ep);
+    return do_query(ep);
 }
 
 template<bool bidirectional_graph>
@@ -110,7 +115,7 @@ query_result Oracle<bidirectional_graph>::query(model::Node *node1, model::Node 
 }
 
 template<bool bidirectional_graph>
-double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) {
+double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) const {
     auto other_graph = graph;
 
     double sse = 0;

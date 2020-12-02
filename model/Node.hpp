@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 
+#include "modeltypes.hpp"
+
 namespace model {
 
     class Edge;
@@ -65,7 +67,7 @@ namespace model {
 
         Edge *getEdgeOf(Node *node);
 
-        static double distance(Node *one, Node *another);
+        static double distance(const Node *one, const Node *another);
 
     };
 

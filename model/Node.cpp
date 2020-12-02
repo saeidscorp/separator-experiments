@@ -70,7 +70,7 @@ Edge *Node::getEdgeOf(Node *node) {
     return _edge_map->at(node);
 }
 
-double Node::distance(Node *one, Node *another) {
+double Node::distance(const Node *one, const Node *another) {
     auto dx = one->getLon() - another->getLon();
     auto dy = one->getLat() - another->getLat();
     return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));

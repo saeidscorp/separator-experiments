@@ -17,10 +17,13 @@ namespace model {
 
     typedef std::list<Node *> path;
 
-    typedef std::pair<path, double> path_length;
+    typedef std::pair<path, ETA> path_length;
 
     typedef std::pair<Node *, Node *> endpoints;
 
+    std::ostream &operator<< (std::ostream &o, Node const &node);
+    std::ostream &operator<< (std::ostream &o, Node const *node);
+    std::ostream &operator<< (std::ostream &o, std::string const *string);
 }
 
 #endif //SEPARATOR_MODEL_HPP

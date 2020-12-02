@@ -20,7 +20,7 @@ endif ()
 
 add_subdirectory(lib/random)
 
-add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp gen/LinearGenerator.hpp alg/LinearSeparator.h alg/Oracle.hpp util/stlutils.hpp util/randutils.h)
+add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp gen/LinearGenerator.hpp alg/LinearSeparator.h alg/Oracle.hpp util/stlutils.hpp model/modeltypes.hpp util/printutils.hpp)
 target_link_libraries(separator effolkronium_random)
 
 

@@ -91,7 +91,7 @@ Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, Edge *edge) {
 
 template<bool bidirectional_graph>
 template<bool bidirectional>
-Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, double max_speed, double eta, std::string name) {
+Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, double max_speed, ETA eta, std::string name) {
     auto edge = connect<bidirectional>(from, to);
     edge->setMaxSpeed(max_speed);
     edge->setEta(eta);
@@ -109,7 +109,7 @@ Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id) {
 
 template<bool bidirectional_graph>
 template<bool bidirectional>
-Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id, double max_speed, double eta, std::string name) {
+Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id, double max_speed, ETA eta, std::string name) {
     auto from_node = _node_map->at(from_id);
     auto to_node = _node_map->at(to_id);
     return connect<bidirectional>(from_node, to_node, max_speed, eta, name);
@@ -127,7 +127,7 @@ std::string Graph<bidirectional_graph>::dotString() const {
         if (name->empty()) continue;
 
         ss << "    " << node->getId();
-        ss << " [label=\"" << name << "\"];" << std::endl;
+        ss << " [label=\"" << *name << "\"];" << std::endl;
     }
 
     for (auto iter = _edge_map->begin(); iter != _edge_map->end(); iter++) {

@@ -12,13 +12,13 @@ Edge::Edge(Node *from, Node *to, bool directed) : Edge(from, to, 0, directed) {}
 
 Edge::Edge(Node *from, Node *to, int id, bool directed) : Edge(from, to, id, 0, 0, directed) {}
 
-Edge::Edge(Node *from, Node *to, double maxSpeed, double eta, bool directed) :
+Edge::Edge(Node *from, Node *to, double maxSpeed, ETA eta, bool directed) :
         Edge(from, to, 0, maxSpeed, eta, new std::string(), directed) {}
 
-Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed) :
+Edge::Edge(Node *from, Node *to, int id, double maxSpeed, ETA eta, bool directed) :
         Edge(from, to, id, maxSpeed, eta, new std::string(), directed) {}
 
-Edge::Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed) :
+Edge::Edge(Node *from, Node *to, int id, double maxSpeed, ETA eta, std::string *name, bool directed) :
         _id(id), _max_speed(maxSpeed), _eta(eta), _directed(directed), _name(name), _from(from), _to(to) {}
 
 int Edge::getId() const {
@@ -37,11 +37,11 @@ void Edge::setMaxSpeed(double maxSpeed) {
     _max_speed = maxSpeed;
 }
 
-double Edge::getEta() const {
+ETA Edge::getEta() const {
     return _eta;
 }
 
-void Edge::setEta(double eta) {
+void Edge::setEta(ETA eta) {
     _eta = eta;
 }
 

@@ -10,6 +10,7 @@
 
 #include "Node.hpp"
 #include "Edge.hpp"
+#include "modeltypes.hpp"
 
 namespace model {
 
@@ -56,10 +57,10 @@ namespace model {
         Edge *connect(int from_id, int to_id);
 
         template<bool bidirectional = bidirectional_graph>
-        Edge *connect(Node *from, Node *to, double max_speed, double eta = 0, std::string name = std::string());
+        Edge *connect(Node *from, Node *to, double max_speed, ETA eta = ETA{}, std::string name = std::string());
 
         template<bool bidirectional = bidirectional_graph>
-        Edge *connect(int from_id, int to_id, double max_speed, double eta = 0, std::string name = std::string());
+        Edge *connect(int from_id, int to_id, double max_speed, ETA eta = ETA{}, std::string name = std::string());
 
         [[nodiscard]] std::vector<model::Node *> getNodes() const;
 

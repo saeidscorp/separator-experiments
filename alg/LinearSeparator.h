@@ -13,10 +13,10 @@
 namespace alg {
 
     template<bool bidirectional_graph>
-    class LinearSeparator {
-    private:
+    class LinearSeparator : public Oracle<bidirectional_graph> {
+    protected:
 
-        int _seps_count;
+        size_t _seps_count;
 
         float _avg_path_length;
 
@@ -37,15 +37,23 @@ namespace alg {
             return lhs_min < rhs_min || (!(rhs_min < lhs_min) && lhs_max < rhs_max);
         };
 
-        typedef std::map<model::endpoints, double, decltype(table_comparator)> preprocessing_table;
+        typedef std::map<model::endpoints, ETA, decltype(table_comparator)> preprocessing_table;
 
         preprocessing_table table;
 
-        Oracle<bidirectional_graph> *oracle;
+        void preprocess(Oracle<bidirectional_graph> *oracle);
 
-        model::Graph<bidirectional_graph> *graph;
+        template<int nth = 1>
+        decltype(auto) closest_separator(model::Node *node) {
+            return util::min_by<nth>(selected_nodes, [node](const model::Node *n) {
+                return model::Node::distance(node, n);
+            });
+        }
 
-        void preprocess();
+        virtual ETA eta_selectives(decltype(selected_nodes)::const_iterator from_it,
+                                      decltype(selected_nodes)::const_iterator to_it);
+
+        query_result do_query(model::endpoints ep) override;
 
     public:
 

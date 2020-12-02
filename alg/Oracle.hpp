@@ -16,7 +16,7 @@ namespace alg {
 
     template<bool bidirectional_graph>
     class Oracle {
-    private:
+    protected:
 
         int num_queries;
 
@@ -27,6 +27,8 @@ namespace alg {
 
         static query_result shortest_path(model::endpoints ep);
 
+        virtual query_result do_query(model::endpoints ep);
+
     public:
 
         explicit Oracle(model::Graph<bidirectional_graph> *graph);
@@ -35,7 +37,7 @@ namespace alg {
 
         query_result query(model::Node *node1, model::Node *node2);
 
-        double similarity(model::Graph<bidirectional_graph> *graph);
+        double similarity(model::Graph<bidirectional_graph> *graph) const;
 
         [[nodiscard]] model::Graph<bidirectional_graph> *getGraph() const;
 

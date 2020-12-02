@@ -36,3 +36,16 @@ void Edge::connectFromTo() {
     _from->addEdge(this);
     _to->addEdge(this);
 }
+
+std::ostream &model::operator<< (std::ostream &o, Node const &node) {
+    decltype(o) o2 = !node.getName()->empty() ? o << node.getName() : (o << "#" << node.getId());
+    return o2 << "(" << node.getLon() << ", " << node.getLat() << ")";
+}
+
+std::ostream &model::operator<< (std::ostream &o, Node const *node) {
+    return model::operator<<(o, *node);
+}
+
+std::ostream &model::operator<< (std::ostream &o, std::string const *string) {
+    return o << *string;
+}

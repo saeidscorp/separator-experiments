@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+#include "modeltypes.hpp"
+
 namespace model {
 
     class Node;
@@ -16,7 +18,7 @@ namespace model {
     private:
         int _id;
         double _max_speed;
-        double _eta; /* the goal of queries */
+        ETA _eta; /* the goal of queries */
         bool _directed;
 
         std::string *_name;
@@ -30,11 +32,11 @@ namespace model {
 
         Edge(Node *from, Node *to, int id, bool directed = true);
 
-        Edge(Node *from, Node *to, double maxSpeed, double eta, bool directed = true);
+        Edge(Node *from, Node *to, double maxSpeed, ETA eta, bool directed = true);
 
-        Edge(Node *from, Node *to, int id, double maxSpeed, double eta, bool directed = true);
+        Edge(Node *from, Node *to, int id, double maxSpeed, ETA eta, bool directed = true);
 
-        Edge(Node *from, Node *to, int id, double maxSpeed, double eta, std::string *name, bool directed = true);
+        Edge(Node *from, Node *to, int id, double maxSpeed, ETA eta, std::string *name, bool directed = true);
 
         Edge(const Edge& other);
 
@@ -46,9 +48,9 @@ namespace model {
 
         void setMaxSpeed(double maxSpeed);
 
-        [[nodiscard]] double getEta() const;
+        [[nodiscard]] ETA getEta() const;
 
-        void setEta(double eta);
+        void setEta(ETA eta);
 
         [[nodiscard]] std::string *getName() const;
 
