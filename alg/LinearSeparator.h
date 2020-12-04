@@ -20,6 +20,8 @@ namespace alg {
 
         float _avg_path_length;
 
+        Oracle<bidirectional_graph> *oracle;
+
         std::vector<model::Node *> selected_nodes;
 
         // could've used a functor instead of this charade
@@ -44,22 +46,26 @@ namespace alg {
         void preprocess(Oracle<bidirectional_graph> *oracle);
 
         template<int nth = 1>
-        decltype(auto) closest_separator(model::Node *node) {
+        decltype(auto) closest_separator(model::Node *node) const {
             return util::min_by<nth>(selected_nodes, [node](const model::Node *n) {
                 return model::Node::distance(node, n);
             });
         }
 
         virtual ETA eta_selectives(decltype(selected_nodes)::const_iterator from_it,
-                                      decltype(selected_nodes)::const_iterator to_it);
+                                   decltype(selected_nodes)::const_iterator to_it) const;
 
-        query_result do_query(model::endpoints ep) override;
+        [[nodiscard]] query_result do_query(model::endpoints ep) const override;
 
     public:
 
         explicit LinearSeparator(model::Graph<bidirectional_graph> *graph);
 
         explicit LinearSeparator(Oracle<bidirectional_graph> *oracle);
+
+        using Oracle<bidirectional_graph>::query;
+
+        [[nodiscard]] double similarity() const;
 
     };
 

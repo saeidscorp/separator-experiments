@@ -27,7 +27,7 @@ namespace alg {
 
         static query_result shortest_path(model::endpoints ep);
 
-        virtual query_result do_query(model::endpoints ep);
+        [[nodiscard]] virtual query_result do_query(model::endpoints ep) const;
 
     public:
 

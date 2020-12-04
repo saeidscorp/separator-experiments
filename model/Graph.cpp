@@ -207,6 +207,26 @@ Graph<bidirectional_graph>::Graph(const Graph<bidirectional_graph> &other)
         dfs(node);
 }
 
+template<bool bidirectional_graph>
+std::optional<model::Edge *> Graph<bidirectional_graph>::getEdgeBetween(model::Node *from, model::Node *to) const {
+    auto edge_res = from->getEdgeOf(to);
+    if (edge_res) return edge_res.value();
+    if constexpr (bidirectional_graph) {
+        edge_res = to->getEdgeOf(from);
+        if (edge_res) return edge_res.value();
+    }
+    return {};
+}
+
+template<bool bidirectional_graph>
+std::optional<model::Edge *> Graph<bidirectional_graph>::getEdgeBetween(int id1, int id2) const {
+    auto n1 = getNode(id1);
+    if (!n1) return {};
+    auto n2 = getNode(id2);
+    if (!n2) return {};
+    return getEdgeBetween(n1.value(), n2.value());
+}
+
 //namespace model {
 //    template class Graph<true>;
 //    template class Graph<false>;

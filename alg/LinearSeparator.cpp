@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <execution>
 
 #include "effolkronium/random.hpp"
+#include "../util/parallelutils.hpp"
 
 using Random = effolkronium::random_static;
 
@@ -18,6 +20,7 @@ template<bool bidirectional_graph>
 LinearSeparator<bidirectional_graph>::LinearSeparator(Oracle<bidirectional_graph> *oracle)
         : Oracle<bidirectional_graph>(oracle->getGraph()) {
 
+    this->oracle = oracle;
     auto nodes_count = oracle->getGraph()->getNodes().size();
     _seps_count = std::sqrt(std::max(nodes_count, 2ul) - 2) + 2;
 
@@ -46,7 +49,7 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
     auto sum_of_path_lengths = 0;
 
     Node *prev = nullptr;
-    for (auto i = 0; i < _seps_count; ++i) {
+    for (auto i = 0ul; i < _seps_count; ++i) {
         auto current = selected_nodes[i];
         if (prev) {
 
@@ -83,7 +86,7 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
 
 template<bool bidirectional_graph>
 model::ETA LinearSeparator<bidirectional_graph>::eta_selectives(decltype(selected_nodes)::const_iterator from_it,
-                                                                decltype(selected_nodes)::const_iterator to_it) {
+                                                                decltype(selected_nodes)::const_iterator to_it) const {
     if (from_it == selected_nodes.end() || to_it == selected_nodes.end())
         throw std::runtime_error("Inputs to the `eta_selectives` must be part of selectives.");
 
@@ -109,7 +112,7 @@ model::ETA LinearSeparator<bidirectional_graph>::eta_selectives(decltype(selecte
 }
 
 template<bool bidirectional_graph>
-query_result LinearSeparator<bidirectional_graph>::do_query(model::endpoints ep) {
+query_result LinearSeparator<bidirectional_graph>::do_query(model::endpoints ep) const {
     auto from = ep.first, to = ep.second;
     auto sel_from = closest_separator(from), sel_to = closest_separator(to);
 
@@ -139,4 +142,25 @@ query_result LinearSeparator<bidirectional_graph>::do_query(model::endpoints ep)
     if (to != *sel_to) path.push_back(to);
 
     return model::path_length(path, total_eta);
+}
+
+template<bool bidirectional_graph>
+double LinearSeparator<bidirectional_graph>::similarity() const {
+    auto ref_graph = this->getGraph();
+    model::Graph<bidirectional_graph> g(*ref_graph);
+
+    auto edges = ref_graph->getEdgeIds();
+    std::for_each(std::execution::par_unseq, edges.begin(), edges.end(), [&](auto other_id) {
+        auto other_edge = ref_graph->getEdge(other_id).value();
+        auto our_edge = g.getEdge(other_id).value();
+
+        auto from = other_edge->getFrom(), to = other_edge->getTo();
+        auto result = do_query({from, to});
+        if (!result) return;
+
+        auto [path, eta] = result.value();
+        our_edge->setEta(eta);
+    });
+
+    return oracle->similarity(&g);
 }

@@ -69,7 +69,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
         open_pq.pop();
 
         for (auto neighbor : current->getNeighs()) {
-            auto neighbor_edge = current->getEdgeOf(neighbor);
+            auto neighbor_edge = current->getEdgeOf(neighbor).value();
             auto tentative_g_score = get_score(&g_score, current) + neighbor_edge->getEta();
 
             if (tentative_g_score < get_score(&g_score, neighbor)) {
@@ -92,7 +92,7 @@ template<bool bidirectional_graph>
 Oracle<bidirectional_graph>::Oracle(model::Graph<bidirectional_graph> *graph) : num_queries(0), graph(graph) {}
 
 template<bool bidirectional_graph>
-query_result Oracle<bidirectional_graph>::do_query(model::endpoints ep) {
+query_result Oracle<bidirectional_graph>::do_query(model::endpoints ep) const {
     return shortest_path(ep);
 }
 

@@ -74,6 +74,10 @@ namespace model {
 
         std::optional<model::Edge *> getEdge(int id) const;
 
+        std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
+
+        std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
+
         std::string dotString() const;
 
     };

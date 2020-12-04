@@ -1,3 +1,6 @@
 [submodule "lib/random"]
 	path = lib/random
 	url = https://github.com/effolkronium/random.git
+[submodule "lib/findtbb"]
+	path = lib/findtbb
+	url = https://github.com/justusc/FindTBB.git

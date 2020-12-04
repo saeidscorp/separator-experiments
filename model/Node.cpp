@@ -66,8 +66,11 @@ void Node::addNeigh(Node *other) {
     _neighs->insert({other->getId(), other});
 }
 
-Edge *Node::getEdgeOf(Node *node) {
-    return _edge_map->at(node);
+std::optional<Edge *> Node::getEdgeOf(Node *node) {
+    auto it = _edge_map->find(node);
+    if (it != _edge_map->end())
+        return it->second;
+    return {};
 }
 
 double Node::distance(const Node *one, const Node *another) {

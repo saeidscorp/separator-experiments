@@ -65,7 +65,7 @@ namespace model {
 
         Node *connect(Edge *existingEdge);
 
-        Edge *getEdgeOf(Node *node);
+        std::optional<Edge *> getEdgeOf(Node *node);
 
         static double distance(const Node *one, const Node *another);
 

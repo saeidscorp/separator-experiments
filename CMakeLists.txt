@@ -19,9 +19,13 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 endif ()
 
 add_subdirectory(lib/random)
+list(APPEND CMAKE_MODULE_PATH "lib/findtbb/FindTBB.cmake")
 
-add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp gen/LinearGenerator.hpp alg/LinearSeparator.h alg/Oracle.hpp util/stlutils.hpp model/modeltypes.hpp util/printutils.hpp)
-target_link_libraries(separator effolkronium_random)
+find_package(TBB)
+find_package(Threads)
+
+add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp gen/LinearGenerator.hpp alg/LinearSeparator.h alg/Oracle.hpp util/stlutils.hpp model/modeltypes.hpp util/printutils.hpp util/parallelutils.hpp)
+target_link_libraries(separator effolkronium_random Threads::Threads tbb)
 
 
 # colorful ninja
