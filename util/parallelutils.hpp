@@ -16,7 +16,7 @@ namespace util {
 
         // internal loop
         auto int_fn = [&fn](unsigned int_start, unsigned seg_size) {
-            for (unsigned j = int_start; j < int_start + seg_size; j++)
+            for (unsigned j = int_start; j < int_start + seg_size; ++j)
                 fn(j);
         };
 
@@ -26,7 +26,7 @@ namespace util {
 
         // get number of threads
         unsigned nb_threads_hint = std::thread::hardware_concurrency();
-        unsigned nb_threads = nb_threads_hint == 0 ? 8 : (nb_threads_hint);
+        unsigned nb_threads = nb_threads_hint == 0 ? 4 : (nb_threads_hint);
 
         // calculate segments
         unsigned total_length = end - start;

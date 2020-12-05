@@ -147,20 +147,49 @@ query_result LinearSeparator<bidirectional_graph>::do_query(model::endpoints ep)
 template<bool bidirectional_graph>
 double LinearSeparator<bidirectional_graph>::similarity() const {
     auto ref_graph = this->getGraph();
-    model::Graph<bidirectional_graph> g(*ref_graph);
+//    model::Graph<bidirectional_graph> g(*ref_graph);
 
-    auto edges = ref_graph->getEdgeIds();
-    std::for_each(std::execution::par_unseq, edges.begin(), edges.end(), [&](auto other_id) {
-        auto other_edge = ref_graph->getEdge(other_id).value();
-        auto our_edge = g.getEdge(other_id).value();
+//    auto edges = ref_graph->getEdgeIds();
+//    std::for_each(std::execution::par_unseq, edges.begin(), edges.end(), [&](auto other_id) {
+//        auto other_edge = ref_graph->getEdge(other_id).value();
+//        auto our_edge = g.getEdge(other_id).value();
+//
+//        auto from = other_edge->getFrom(), to = other_edge->getTo();
+//        auto result = do_query({from, to});
+//        if (!result) return;
+//
+//        auto [path, eta] = result.value();
+//        our_edge->setEta(eta);
+//    });
 
-        auto from = other_edge->getFrom(), to = other_edge->getTo();
-        auto result = do_query({from, to});
-        if (!result) return;
+    std::atomic<double> sse;
+    std::atomic<int> query_count;
 
-        auto [path, eta] = result.value();
-        our_edge->setEta(eta);
+    auto nodes = ref_graph->getNodes();
+    auto start_index = 0ul, end_index = nodes.size();
+
+    util::parallel_for(start_index, end_index, [&](unsigned i) {
+        double current_sse = 0;
+        unsigned successful_queries = 0;
+        for (unsigned j = start_index; j < end_index; ++j) {
+
+            if (i == j) continue;
+
+            auto from = nodes[i], to = nodes[j];
+            auto sep_eta = do_query({from, to});
+            if (!sep_eta)
+                continue;
+
+            auto oracle_eta = oracle->query({from, to});
+            if (!oracle_eta)
+                std::cerr << "oracle query unavailable" << std::endl;
+
+            current_sse += std::pow(oracle_eta.value().second - sep_eta.value().second, 2);
+            successful_queries++;
+        }
+        sse += current_sse;
+        query_count += successful_queries;
     });
 
-    return oracle->similarity(&g);
+    return sse.load() / query_count.load();
 }

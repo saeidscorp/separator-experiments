@@ -27,7 +27,7 @@ model::Graph<bidirectional_graph> *random_weights(model::Graph<bidirectional_gra
 
 int main() {
 
-    auto linear_gen = new gen::LinearGenerator<true>(400);
+    auto linear_gen = new gen::LinearGenerator<true>(200);
     auto rand_g = linear_gen->generate();
     std::cout << rand_g->dotString() << std::endl;
 

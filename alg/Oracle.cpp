@@ -8,6 +8,8 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <numeric>
+#include <execution>
 
 #include "../util/stlutils.hpp"
 
@@ -118,22 +120,33 @@ template<bool bidirectional_graph>
 double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) const {
     auto other_graph = graph;
 
-    double sse = 0;
-    int edge_count = 0;
+    auto edge_ids = other_graph->getEdgeIds();
+    auto begin = edge_ids.cbegin(), end = edge_ids.cend();
 
-    for (auto other_id : other_graph->getEdgeIds()) {
-        auto other_edge_o = other_graph->getEdge(other_id);
-        auto our_edge_o = this->graph->getEdge(other_id);
+    std::vector<std::pair<double, int>> results;
+    results.reserve(std::distance(begin, end));
 
-        if (!other_edge_o || !our_edge_o)
-            throw std::runtime_error("Topologies or edge ids mismatch.");
+    std::transform(begin, end, std::back_inserter(results),
+                   [&](const auto &other_id) {
+                       auto other_edge_o = other_graph->getEdge(other_id);
+                       auto our_edge_o = this->graph->getEdge(other_id);
 
-        auto other_edge = other_edge_o.value();
-        auto our_edge = our_edge_o.value();
+                       if (!other_edge_o || !our_edge_o)
+                           throw std::runtime_error("Topologies or edge ids mismatch.");
 
-        sse += std::pow(other_edge->getEta() - our_edge->getEta(), 2);
-        edge_count++;
-    }
+                       auto other_edge = other_edge_o.value();
+                       auto our_edge = our_edge_o.value();
+
+                       auto sse = std::pow(other_edge->getEta() - our_edge->getEta(), 2);
+                       return std::make_pair(sse, 1);
+                   });
+
+    const auto &[sse, edge_count] =
+    std::reduce(std::execution::par_unseq, results.cbegin(), results.cend(),
+                std::make_pair(0., 0),
+                [](const auto &p1, const auto &p2) {
+                    return std::make_pair(p1.first + p2.first, p1.second + p2.second);
+                });
 
     return sse / edge_count;
 }
