@@ -14,13 +14,15 @@ namespace alg {
 
     typedef std::optional<model::path_length> query_result;
 
+//    typedef std::function<ETA(model::endpoints)> query_function;
+
     template<bool bidirectional_graph>
     class Oracle {
     protected:
 
-        int num_queries;
+        unsigned num_queries;
 
-        model::Graph<bidirectional_graph> *graph;
+        const model::Graph<bidirectional_graph> *graph;
 
         std::map<model::endpoints, int> frequencies;
 
@@ -31,15 +33,19 @@ namespace alg {
 
     public:
 
-        explicit Oracle(model::Graph<bidirectional_graph> *graph);
+        explicit Oracle(const model::Graph<bidirectional_graph> *graph);
 
         query_result query(model::endpoints ep);
 
         query_result query(model::Node *node1, model::Node *node2);
 
-        double similarity(model::Graph<bidirectional_graph> *graph) const;
+        double similarity(const Oracle<bidirectional_graph> *other_oracle) const;
+
+        double similarity(const model::Graph<bidirectional_graph> *other_graph) const;
 
         [[nodiscard]] model::Graph<bidirectional_graph> *getGraph() const;
+
+        [[nodiscard]] unsigned queries() const;
 
     };
 }

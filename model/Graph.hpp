@@ -7,6 +7,7 @@
 
 #include <map>
 #include <vector>
+#include <functional>
 
 #include "Node.hpp"
 #include "Edge.hpp"
@@ -43,10 +44,6 @@ namespace model {
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
-        void addNode(Node *node);
-
-        void addEdge(Edge *edge);
-
         template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to);
 
@@ -64,21 +61,23 @@ namespace model {
 
         [[nodiscard]] std::vector<model::Node *> getNodes() const;
 
-        std::vector<int> getNodeIds() const;
+        [[nodiscard]] std::vector<int> getNodeIds() const;
 
-        std::vector<model::Edge *> getEdges() const;
+        [[nodiscard]] std::vector<model::Edge *> getEdges() const;
 
-        std::vector<int> getEdgeIds() const;
+        [[nodiscard]] std::vector<int> getEdgeIds() const;
 
-        std::optional<model::Node *> getNode(int id) const;
+        [[nodiscard]] std::optional<model::Node *> getNode(int id) const;
 
-        std::optional<model::Edge *> getEdge(int id) const;
+        [[nodiscard]] std::optional<model::Edge *> getEdge(int id) const;
 
         std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
 
-        std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
+        [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
 
-        std::string dotString() const;
+        [[nodiscard]] std::string dotString() const;
+
+        double similarity(model::Graph<bidirectional_graph> *graph) const;
 
     };
 

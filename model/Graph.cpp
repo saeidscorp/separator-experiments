@@ -5,6 +5,9 @@
 #include "Graph.hpp"
 #include <sstream>
 #include <optional>
+#include <cmath>
+#include <numeric>
+#include <execution>
 
 #include "../util/stlutils.hpp"
 
@@ -225,6 +228,41 @@ std::optional<model::Edge *> Graph<bidirectional_graph>::getEdgeBetween(int id1,
     auto n2 = getNode(id2);
     if (!n2) return {};
     return getEdgeBetween(n1.value(), n2.value());
+}
+
+template<bool bidirectional_graph>
+double Graph<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) const {
+    auto other_graph = graph;
+
+    auto edge_ids = other_graph->getEdgeIds();
+    auto begin = edge_ids.cbegin(), end = edge_ids.cend();
+
+    std::vector<std::pair<double, int>> results;
+    results.reserve(std::distance(begin, end));
+
+    std::transform(begin, end, std::back_inserter(results),
+                   [&](const auto &other_id) {
+                       auto other_edge_o = other_graph->getEdge(other_id);
+                       auto our_edge_o = this->getEdge(other_id);
+
+                       if (!other_edge_o || !our_edge_o)
+                           throw std::runtime_error("Topologies or edge ids mismatch.");
+
+                       auto other_edge = other_edge_o.value();
+                       auto our_edge = our_edge_o.value();
+
+                       auto sse = std::pow(other_edge->getEta() - our_edge->getEta(), 2);
+                       return std::make_pair(sse, 1);
+                   });
+
+    const auto &[sse, edge_count] =
+    std::reduce(std::execution::par_unseq, results.cbegin(), results.cend(),
+                std::make_pair(0., 0),
+                [](const auto &p1, const auto &p2) {
+                    return std::make_pair(p1.first + p2.first, p1.second + p2.second);
+                });
+
+    return sse / edge_count;
 }
 
 //namespace model {

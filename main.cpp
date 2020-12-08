@@ -25,28 +25,32 @@ model::Graph<bidirectional_graph> *random_weights(model::Graph<bidirectional_gra
     return g_copy;
 }
 
-int main() {
+std::optional<std::string> get_cmd_option(const char ** begin, const char ** end, const std::string & option)
+{
+    const char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+        return *itr;
+    return {};
+}
 
-    auto linear_gen = new gen::LinearGenerator<true>(200);
+std::optional<std::string> get_cmd_option(const int argc, const char **argv, const std::string & option)
+{
+    return get_cmd_option(argv, argv + argc, option);
+}
+
+int main(int argc, const char **argv) {
+
+    int n = 10;
+
+    auto graph_size = get_cmd_option(argc, argv, "-n");
+    if (graph_size)
+        n = std::stoi(graph_size.value());
+
+    auto linear_gen = new gen::LinearGenerator<true>(n);
     auto rand_g = linear_gen->generate();
-    std::cout << rand_g->dotString() << std::endl;
-
-    auto nodes_ids = rand_g->getNodeIds();
-    auto n1 = rand_g->getNode(nodes_ids[3]).value();
-    auto n2 = rand_g->getNode(nodes_ids[nodes_ids.size() - 3]).value();
-
-    std::cout << "# Oracle:" << std::endl;
     auto oracle = new alg::Oracle(rand_g);
-    auto result = oracle->query(n1, n2);
-    util::print_path(n1, n2, result);
-
-    std::cout << std::endl;
-
     std::cout << "# Linear Separator:" << std::endl;
     auto linear_sep = new alg::LinearSeparator(rand_g);
-    result = linear_sep->query(n1, n2);
-    util::print_path(n1, n2, result);
-
     std::cout << std::endl;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -55,6 +59,9 @@ int main() {
     std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
 
     std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+
+    std::cout << "Linear separator used " << linear_sep->preprocessing_queries() << " queries from the oracle"
+              << std::endl;
 
     start = std::chrono::high_resolution_clock::now();
     auto random_from_g = random_weights(rand_g);

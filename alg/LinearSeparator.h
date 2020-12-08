@@ -20,7 +20,7 @@ namespace alg {
 
         float _avg_path_length;
 
-        Oracle<bidirectional_graph> *oracle;
+        unsigned preprocessing_num_queries;
 
         std::vector<model::Node *> selected_nodes;
 
@@ -52,8 +52,8 @@ namespace alg {
             });
         }
 
-        virtual ETA eta_selectives(decltype(selected_nodes)::const_iterator from_it,
-                                   decltype(selected_nodes)::const_iterator to_it) const;
+        [[nodiscard]] virtual ETA eta_selectives(decltype(selected_nodes)::const_iterator from_it,
+                                                 decltype(selected_nodes)::const_iterator to_it) const;
 
         [[nodiscard]] query_result do_query(model::endpoints ep) const override;
 
@@ -66,6 +66,8 @@ namespace alg {
         using Oracle<bidirectional_graph>::query;
 
         [[nodiscard]] double similarity() const;
+
+        [[nodiscard]] unsigned preprocessing_queries() const;
 
     };
 

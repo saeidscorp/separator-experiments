@@ -7,9 +7,7 @@
 #include <map>
 #include <queue>
 #include <set>
-#include <cmath>
-#include <numeric>
-#include <execution>
+#include <iostream>
 
 #include "../util/stlutils.hpp"
 
@@ -91,7 +89,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 }
 
 template<bool bidirectional_graph>
-Oracle<bidirectional_graph>::Oracle(model::Graph<bidirectional_graph> *graph) : num_queries(0), graph(graph) {}
+Oracle<bidirectional_graph>::Oracle(const model::Graph<bidirectional_graph> *graph) : num_queries(0), graph(graph) {}
 
 template<bool bidirectional_graph>
 query_result Oracle<bidirectional_graph>::do_query(model::endpoints ep) const {
@@ -117,43 +115,53 @@ query_result Oracle<bidirectional_graph>::query(model::Node *node1, model::Node 
 }
 
 template<bool bidirectional_graph>
-double Oracle<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> *graph) const {
-    auto other_graph = graph;
+double Oracle<bidirectional_graph>::similarity(const Oracle<bidirectional_graph> *other_oracle) const {
+    auto ref_graph = this->getGraph();
+    auto other_graph = other_oracle->getGraph();
 
-    auto edge_ids = other_graph->getEdgeIds();
-    auto begin = edge_ids.cbegin(), end = edge_ids.cend();
+    double sse = 0;
+    unsigned query_count = 0;
 
-    std::vector<std::pair<double, int>> results;
-    results.reserve(std::distance(begin, end));
+    auto nodes = ref_graph->getNodes();
+    auto start_index = 0ul, end_index = nodes.size();
 
-    std::transform(begin, end, std::back_inserter(results),
-                   [&](const auto &other_id) {
-                       auto other_edge_o = other_graph->getEdge(other_id);
-                       auto our_edge_o = this->graph->getEdge(other_id);
+    for (auto i = start_index; i < end_index; ++i)
+        for (unsigned j = start_index; j < end_index; ++j) {
 
-                       if (!other_edge_o || !our_edge_o)
-                           throw std::runtime_error("Topologies or edge ids mismatch.");
+            if (i == j) continue;
 
-                       auto other_edge = other_edge_o.value();
-                       auto our_edge = our_edge_o.value();
+            auto sep_eta = do_query({nodes[i], nodes[j]});
+            if (!sep_eta)
+                continue;
 
-                       auto sse = std::pow(other_edge->getEta() - our_edge->getEta(), 2);
-                       return std::make_pair(sse, 1);
-                   });
+            auto from = other_graph->getNode(nodes[i]->getId()), to = other_graph->getNode(nodes[j]->getId());
+            if (!from || !to)
+                std::cerr << "node not available in second graph for similarity computation" << std::endl;
+            auto oracle_eta = other_oracle->do_query({from.value(), to.value()});
+            if (!oracle_eta)
+                std::cerr << "oracle query unavailable" << std::endl;
 
-    const auto &[sse, edge_count] =
-    std::reduce(std::execution::par_unseq, results.cbegin(), results.cend(),
-                std::make_pair(0., 0),
-                [](const auto &p1, const auto &p2) {
-                    return std::make_pair(p1.first + p2.first, p1.second + p2.second);
-                });
+            sse += std::pow(oracle_eta.value().second - sep_eta.value().second, 2);
+            query_count++;
+        }
 
-    return sse / edge_count;
+    return sse / query_count;
 }
 
 template<bool bidirectional_graph>
 model::Graph<bidirectional_graph> *Oracle<bidirectional_graph>::getGraph() const {
-    return graph;
+    return const_cast<model::Graph<bidirectional_graph> *>(graph);
+}
+
+template<bool bidirectional_graph>
+unsigned Oracle<bidirectional_graph>::queries() const {
+    return num_queries;
+}
+
+template<bool bidirectional_graph>
+double Oracle<bidirectional_graph>::similarity(const model::Graph<bidirectional_graph> *other_graph) const {
+    Oracle<bidirectional_graph> oracle(other_graph);
+    return similarity(&oracle);
 }
 
 //namespace alg {

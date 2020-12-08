@@ -18,9 +18,9 @@ using namespace alg;
 
 template<bool bidirectional_graph>
 LinearSeparator<bidirectional_graph>::LinearSeparator(Oracle<bidirectional_graph> *oracle)
-        : Oracle<bidirectional_graph>(oracle->getGraph()) {
+        : Oracle<bidirectional_graph>(oracle->getGraph()), preprocessing_num_queries(0) {
 
-    this->oracle = oracle;
+
     auto nodes_count = oracle->getGraph()->getNodes().size();
     _seps_count = std::sqrt(std::max(nodes_count, 2ul) - 2) + 2;
 
@@ -33,6 +33,7 @@ LinearSeparator<bidirectional>::LinearSeparator(model::Graph<bidirectional> *gra
 
 template<bool bidirectional_graph>
 void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> *oracle) {
+    auto starting_count = oracle->queries();
     auto all_nodes = oracle->getGraph()->getNodes();
     int start_index = 0, end_index = all_nodes.size() - 1;
 
@@ -82,6 +83,7 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
     }
 
     _avg_path_length = (ETA) sum_of_path_lengths / (_seps_count - 1);
+    preprocessing_num_queries = oracle->queries() - starting_count;
 }
 
 template<bool bidirectional_graph>
@@ -146,50 +148,11 @@ query_result LinearSeparator<bidirectional_graph>::do_query(model::endpoints ep)
 
 template<bool bidirectional_graph>
 double LinearSeparator<bidirectional_graph>::similarity() const {
-    auto ref_graph = this->getGraph();
-//    model::Graph<bidirectional_graph> g(*ref_graph);
+    Oracle<bidirectional_graph> oracle(this->getGraph());
+    return oracle.similarity(this);
+}
 
-//    auto edges = ref_graph->getEdgeIds();
-//    std::for_each(std::execution::par_unseq, edges.begin(), edges.end(), [&](auto other_id) {
-//        auto other_edge = ref_graph->getEdge(other_id).value();
-//        auto our_edge = g.getEdge(other_id).value();
-//
-//        auto from = other_edge->getFrom(), to = other_edge->getTo();
-//        auto result = do_query({from, to});
-//        if (!result) return;
-//
-//        auto [path, eta] = result.value();
-//        our_edge->setEta(eta);
-//    });
-
-    std::atomic<double> sse;
-    std::atomic<int> query_count;
-
-    auto nodes = ref_graph->getNodes();
-    auto start_index = 0ul, end_index = nodes.size();
-
-    util::parallel_for(start_index, end_index, [&](unsigned i) {
-        double current_sse = 0;
-        unsigned successful_queries = 0;
-        for (unsigned j = start_index; j < end_index; ++j) {
-
-            if (i == j) continue;
-
-            auto from = nodes[i], to = nodes[j];
-            auto sep_eta = do_query({from, to});
-            if (!sep_eta)
-                continue;
-
-            auto oracle_eta = oracle->query({from, to});
-            if (!oracle_eta)
-                std::cerr << "oracle query unavailable" << std::endl;
-
-            current_sse += std::pow(oracle_eta.value().second - sep_eta.value().second, 2);
-            successful_queries++;
-        }
-        sse += current_sse;
-        query_count += successful_queries;
-    });
-
-    return sse.load() / query_count.load();
+template<bool bidirectional_graph>
+unsigned LinearSeparator<bidirectional_graph>::preprocessing_queries() const {
+    return preprocessing_num_queries;
 }
