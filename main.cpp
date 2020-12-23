@@ -51,6 +51,8 @@ int main(int argc, const char **argv) {
     auto oracle = new alg::Oracle(rand_g);
     std::cout << "# Linear Separator:" << std::endl;
     auto linear_sep = new alg::LinearSeparator(rand_g);
+    std::cout << "Linear separator used " << linear_sep->preprocessing_queries() << " queries from the oracle"
+              << std::endl;
     std::cout << std::endl;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -59,9 +61,6 @@ int main(int argc, const char **argv) {
     std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
 
     std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
-
-    std::cout << "Linear separator used " << linear_sep->preprocessing_queries() << " queries from the oracle"
-              << std::endl;
 
     start = std::chrono::high_resolution_clock::now();
     auto random_from_g = random_weights(rand_g);
