@@ -119,10 +119,25 @@ Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id, double max_spe
 }
 
 template<bool bidirectional_graph>
+std::size_t Graph<bidirectional_graph>::size() const {
+    return _node_map->size();
+}
+
+template<bool bidirectional_graph>
 std::string Graph<bidirectional_graph>::dotString() const {
+
+    std::string edge_specifier, graph_specifier;
+    if constexpr (bidirectional_graph) {
+        graph_specifier = "graph";
+        edge_specifier = " -- ";
+    } else {
+        graph_specifier = "digraph";
+        edge_specifier = " -> ";
+    }
+
     std::stringstream ss;
-    ss << "graph {" << std::endl;
-    ss << "    " << "rankdir=\"LR\";" << std::endl;
+    ss << graph_specifier << " {" << std::endl;
+//    ss << "    " << "rankdir=\"LR\";" << std::endl;
 
     for (auto iter = _node_map->begin(); iter != _node_map->end(); iter++) {
         auto node = iter->second;
@@ -136,7 +151,7 @@ std::string Graph<bidirectional_graph>::dotString() const {
     for (auto iter = _edge_map->begin(); iter != _edge_map->end(); iter++) {
         auto edge = iter->second;
         ss << "    ";
-        ss << edge->getFrom()->getId() << " -- " << edge->getTo()->getId();
+        ss << edge->getFrom()->getId() << edge_specifier << edge->getTo()->getId();
         ss << " [label=\"" << edge->getEta() << "\"];" << std::endl;
     }
 
@@ -263,6 +278,26 @@ double Graph<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> 
                 });
 
     return sse / edge_count;
+}
+
+template<bool bidirectional_graph>
+template<bool bidirectional>
+void Graph<bidirectional_graph>::remove_edge(Edge *edge) {
+    auto from = edge->getFrom();
+    auto to = edge->getTo();
+    from->disconnect(edge);
+    if constexpr (bidirectional) {
+        to->disconnect(edge);
+    }
+    _edge_map->erase(edge->getId());
+}
+
+template<bool bidirectional_graph>
+template<bool bidirectional>
+void Graph<bidirectional_graph>::disconnect(Node *from, Node *to) {
+    auto edge = from->getEdgeOf(to);
+    if (edge)
+        remove_edge<bidirectional>(*edge);
 }
 
 //namespace model {

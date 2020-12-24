@@ -3,6 +3,8 @@
 //
 
 #include "model.hpp"
+#include "Node.hpp"
+
 
 using namespace model;
 
@@ -48,4 +50,26 @@ std::ostream &model::operator<< (std::ostream &o, Node const *node) {
 
 std::ostream &model::operator<< (std::ostream &o, std::string const *string) {
     return o << *string;
+}
+
+void Node::remove_edge(Edge *edge) {
+    auto other = edge->getOther(this);
+
+    // fixme: assert that the values are also the same (is that even necessary?)
+    if (!_edge_map->contains(other))
+        return;
+
+    _edges->erase(std::remove(_edges->begin(), _edges->end(), edge), _edges->end());
+    remove_neigh(other);
+    _edge_map->erase(other);
+}
+
+void Node::disconnect(Edge *edge) {
+    remove_edge(edge);
+}
+
+void Node::disconnect(Node *other) {
+    auto edge_it = _edge_map->find(other);
+    if (edge_it != _edge_map->end())
+        remove_edge(edge_it->second);
 }

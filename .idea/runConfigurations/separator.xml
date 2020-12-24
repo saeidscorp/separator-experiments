@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="separator" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 500" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="separator" TARGET_NAME="separator" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="separator" RUN_TARGET_NAME="separator">
+  <configuration default="false" name="separator" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="separator" TARGET_NAME="separator" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="separator" RUN_TARGET_NAME="separator">
     <method v="2">
       <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Remove Coverage Profiles" />
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />

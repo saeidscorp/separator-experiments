@@ -5,9 +5,11 @@
 #include "model/model.hpp"
 #include "gen/LinearGenerator.hpp"
 #include "alg/LinearSeparator.h"
+#include "gen/TreeGenerator.hpp"
 #include "alg/Oracle.hpp"
 #include "util/stlutils.hpp"
 #include "util/printutils.hpp"
+#include "alg/CentroidDecomposition.h"
 
 template<bool bidirectional_graph = true>
 model::Graph<bidirectional_graph> *random_weights(model::Graph<bidirectional_graph> *g) {
@@ -40,40 +42,22 @@ std::optional<std::string> get_cmd_option(const int argc, const char **argv, con
 
 int main(int argc, const char **argv) {
 
-    int n = 10;
-
-    auto graph_size = get_cmd_option(argc, argv, "-n");
-    if (graph_size)
-        n = std::stoi(graph_size.value());
-
-    auto linear_gen = new gen::LinearGenerator<true>(n);
-    auto rand_g = linear_gen->generate();
-    auto oracle = new alg::Oracle(rand_g);
-    std::cout << "# Linear Separator:" << std::endl;
-    auto linear_sep = new alg::LinearSeparator(rand_g);
-    std::cout << "Linear separator used " << linear_sep->preprocessing_queries() << " queries from the oracle"
-              << std::endl;
-    std::cout << std::endl;
+    gen::TreeGenerator tree_gen{16, 2, 4};
+//    gen::LinearGenerator<true> linear_gen{4};
+    auto graph = tree_gen.generate();
+//    auto graph = linear_gen.generate();
 
     auto start = std::chrono::high_resolution_clock::now();
-    auto similarity = linear_sep->similarity();
+    alg::CentroidDecomposition centroid_decomposition{graph};
     std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+    std::cout << ":: tree decomposing took " << elapsed.count() << " seconds ::" << std::endl;
 
-    std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+    std::cout << std::endl;
 
-    start = std::chrono::high_resolution_clock::now();
-    auto random_from_g = random_weights(rand_g);
-    elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
+    auto tree = centroid_decomposition.toGraph();
 
-    start = std::chrono::high_resolution_clock::now();
-    similarity = oracle->similarity(random_from_g);
-    elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: computing similarity took " << elapsed.count() << " seconds" << std::endl;
-
-    std::cout << "MSE of reference graph but with random weights to the reference itself is: "
-              << similarity << std::endl;
+    std::cout << graph->dotString() << std::endl;
+    std::cout << tree->dotString() << std::endl;
 
     return 0;
 }

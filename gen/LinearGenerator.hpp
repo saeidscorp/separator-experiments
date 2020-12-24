@@ -18,7 +18,7 @@ namespace gen {
     public:
         LinearGenerator();
 
-        LinearGenerator(int length);
+        explicit LinearGenerator(int length);
 
         model::Graph<bidirectional_graph> *generate();
     };

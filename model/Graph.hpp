@@ -33,6 +33,9 @@ namespace model {
         template<bool bidirectional = bidirectional_graph>
         void add_edge(Edge *edge);
 
+        template<bool bidirectional = bidirectional_graph>
+        void remove_edge(Edge *edge);
+
     public:
         Graph();
 
@@ -58,6 +61,17 @@ namespace model {
 
         template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id, double max_speed, ETA eta = ETA{}, std::string name = std::string());
+
+        template<bool bidirectional = bidirectional_graph>
+        void disconnect(Node *from, Node *to);
+
+        template<bool bidirectional = bidirectional_graph>
+        void disconnect(int from_id, int to_id);
+
+        template<bool bidirectional = bidirectional_graph>
+        void disconnect(Edge *edge);
+
+        [[nodiscard]] std::size_t size() const;
 
         [[nodiscard]] std::vector<model::Node *> getNodes() const;
 

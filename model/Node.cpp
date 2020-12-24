@@ -66,6 +66,10 @@ void Node::addNeigh(Node *other) {
     _neighs->insert({other->getId(), other});
 }
 
+void Node::remove_neigh(Node *other) {
+    _neighs->erase(other->getId());
+}
+
 std::optional<Edge *> Node::getEdgeOf(Node *node) {
     auto it = _edge_map->find(node);
     if (it != _edge_map->end())
