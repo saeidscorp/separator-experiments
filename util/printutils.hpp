@@ -46,7 +46,8 @@ namespace util {
         if (dot.wait())
             throw std::runtime_error("`dot` process failed.");
 
-        std::system(("xdg-open " + image_file + " >/dev/null 2>&1 &").c_str());
+        std::system(("bash -c 'gwenview " + image_file
+                     + " >/dev/null 2>&1 && rm " + image_file + " " + gv_file + " " + temp_name + "' &").c_str());
     }
 
 }
