@@ -26,6 +26,7 @@ find_package(Threads)
 
 add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp gen/LinearGenerator.hpp alg/LinearSeparator.h alg/Oracle.hpp util/stlutils.hpp model/modeltypes.hpp util/printutils.hpp util/parallelutils.hpp gen/TreeGenerator.hpp gen/TreeGenerator.cpp util/randutils.hpp util/funcutils.hpp alg/CentroidDecomposition.cpp alg/CentroidDecomposition.h)
 target_link_libraries(separator effolkronium_random Threads::Threads tbb)
+target_include_directories(separator PRIVATE lib/cpp-subprocess/include)
 
 
 # colorful ninja

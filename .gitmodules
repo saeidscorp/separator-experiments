@@ -4,3 +4,6 @@
 [submodule "lib/findtbb"]
 	path = lib/findtbb
 	url = https://github.com/justusc/FindTBB.git
+[submodule "lib/cpp-subprocess"]
+	path = lib/cpp-subprocess
+	url = https://github.com/tsaarni/cpp-subprocess.git

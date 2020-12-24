@@ -52,12 +52,10 @@ int main(int argc, const char **argv) {
     std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
     std::cout << ":: tree decomposing took " << elapsed.count() << " seconds ::" << std::endl;
 
-    std::cout << std::endl;
-
     auto tree = centroid_decomposition.toGraph();
 
-    std::cout << graph->dotString() << std::endl;
-    std::cout << tree->dotString() << std::endl;
+    util::visualize_graph(graph);
+    util::visualize_graph(tree);
 
     return 0;
 }
