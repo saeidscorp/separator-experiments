@@ -1,21 +1,21 @@
 //
-// Created by saeid on 11/4/20.
+// Created by saeid on 12/25/20.
 //
 
-#ifndef SEPARATOR_LINEARSEPARATOR_HPP
-#define SEPARATOR_LINEARSEPARATOR_HPP
+#ifndef SEPARATOR_TREESEPARATOR_HPP
+#define SEPARATOR_TREESEPARATOR_HPP
 
-#include <map>
-
-#include "Separator.hpp"
 #include "../model/model.hpp"
+#include "Separator.hpp"
 #include "Oracle.hpp"
 
 namespace alg {
 
     template<bool bidirectional_graph>
-    class LinearSeparator : public Separator<bidirectional_graph> {
+    class TreeSeparator : public Separator<bidirectional_graph> {
     protected:
+
+        model::Tree decomposition;
 
         void preprocess(Oracle<bidirectional_graph> *oracle) override;
 
@@ -28,14 +28,14 @@ namespace alg {
 
     public:
 
-        explicit LinearSeparator(const model::Graph<bidirectional_graph> *graph);
+        explicit TreeSeparator(const model::Graph<bidirectional_graph> *graph);
 
-        explicit LinearSeparator(Oracle<bidirectional_graph> *oracle);
+        explicit TreeSeparator(Oracle<bidirectional_graph> *oracle);
 
     };
 
 }
 
-#include "LinearSeparator.cpp"
+#include "TreeSeparator.cpp"
 
-#endif //SEPARATOR_LINEARSEPARATOR_HPP
+#endif //SEPARATOR_TREESEPARATOR_HPP

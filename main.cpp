@@ -6,7 +6,7 @@
 #include "gen/LinearGenerator.hpp"
 #include "alg/LinearSeparator.hpp"
 #include "gen/TreeGenerator.hpp"
-#include "alg/CentroidDecomposition.hpp"
+#include "alg/TreeSeparator.hpp"
 #include "alg/Oracle.hpp"
 
 #include "util/stlutils.hpp"
@@ -16,20 +16,14 @@
 
 int main(int argc, const char **argv) {
 
-    gen::TreeGenerator tree_gen{16, 2, 4};
-//    gen::LinearGenerator<true> linear_gen{4};
-    auto graph = tree_gen.generate();
-//    auto graph = linear_gen.generate();
+//    gen::TreeGenerator tree_gen{16, 2, 4};
+    gen::LinearGenerator<true> linear_gen;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    alg::CentroidDecomposition centroid_decomposition{graph};
-    std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: tree decomposing took " << elapsed.count() << " seconds ::" << std::endl;
+//    alg::TreeSeparator tree_sep{tree_gen.generate()};
+    alg::LinearSeparator linear_sep{linear_gen.generate()};
 
-    auto tree = centroid_decomposition.toGraph();
-
-    util::visualize_graph(graph);
-    util::visualize_graph(tree);
+    std::cout << " preprocessing queries: " << linear_sep.preprocessing_queries() << std::endl;
+    std::cout << " similarity: " << linear_sep.similarity() << std::endl;
 
     return 0;
 }
