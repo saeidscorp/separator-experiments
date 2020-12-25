@@ -34,7 +34,7 @@ Node *Graph<bidirectional_graph>::createNode() {
 }
 
 template<bool bidirectional_graph>
-Node *Graph<bidirectional_graph>::createNode(Node *node) {
+Node *Graph<bidirectional_graph>::createNode(const Node *node) {
     auto copy = new Node(*node);
     add_node(copy);
     return copy;

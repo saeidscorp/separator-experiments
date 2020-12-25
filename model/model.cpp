@@ -73,3 +73,21 @@ void Node::disconnect(Node *other) {
     if (edge_it != _edge_map->end())
         remove_edge(edge_it->second);
 }
+
+template<bool bidirectional_graph>
+Graph<bidirectional_graph> *model::random_weights(Graph<bidirectional_graph> *g) {
+    auto g_copy = new Graph<bidirectional_graph>(*g);
+    auto nodes = g->getNodes();
+    auto start_index = 0ul, end_index = nodes.size() - 1;
+    for (auto i = start_index; i < end_index; ++i)
+        for (auto j = start_index; j < end_index; ++j) {
+            auto from = nodes[i], to = nodes[j];
+            auto eta = Random::get(0., 1.);
+            auto our_edge = g_copy->getEdgeBetween(from->getId(), to->getId());
+            if (our_edge)
+                our_edge.value()->setEta(eta);
+        }
+    return g_copy;
+}
+
+template Graph<true> *model::random_weights(Graph<true> *g);

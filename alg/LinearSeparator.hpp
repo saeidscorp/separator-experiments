@@ -2,8 +2,8 @@
 // Created by saeid on 11/4/20.
 //
 
-#ifndef SEPARATOR_LINEARSEPARATOR_H
-#define SEPARATOR_LINEARSEPARATOR_H
+#ifndef SEPARATOR_LINEARSEPARATOR_HPP
+#define SEPARATOR_LINEARSEPARATOR_HPP
 
 #include <map>
 
@@ -75,4 +75,4 @@ namespace alg {
 
 #include "LinearSeparator.cpp"
 
-#endif //SEPARATOR_LINEARSEPARATOR_H
+#endif //SEPARATOR_LINEARSEPARATOR_HPP

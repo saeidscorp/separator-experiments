@@ -69,7 +69,7 @@ void Edge::setTo(Node *to) {
     _to = to;
 }
 
-Node *Edge::getOther(Node *thisOne) {
+Node *Edge::getOther(const Node *thisOne) const {
     if (_from == thisOne)
         return _to;
     if (_to == thisOne)

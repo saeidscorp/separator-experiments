@@ -43,7 +43,7 @@ namespace model {
 
         Node *createNode();
 
-        Node *createNode(Node *node);
+        Node *createNode(const Node *node);
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
