@@ -3,8 +3,6 @@
 #include <chrono>
 
 #include "model/model.hpp"
-#include "gen/LinearGenerator.hpp"
-#include "alg/LinearSeparator.hpp"
 #include "gen/TreeGenerator.hpp"
 #include "alg/TreeSeparator.hpp"
 #include "alg/Oracle.hpp"
@@ -16,14 +14,22 @@
 
 int main(int argc, const char **argv) {
 
-//    gen::TreeGenerator tree_gen{16, 2, 4};
-    gen::LinearGenerator<true> linear_gen;
+    int n = 16;
 
-//    alg::TreeSeparator tree_sep{tree_gen.generate()};
-    alg::LinearSeparator linear_sep{linear_gen.generate()};
+    auto graph_size = get_cmd_option(argc, argv, "-n");
+    if (graph_size)
+        n = std::stoi(graph_size.value());
 
-    std::cout << " preprocessing queries: " << linear_sep.preprocessing_queries() << std::endl;
-    std::cout << " similarity: " << linear_sep.similarity() << std::endl;
+    std::cout << "for tree of size " << n << std::endl;
+
+    gen::TreeGenerator tree_gen{n, 2, 4};
+
+    alg::TreeSeparator tree_sep{tree_gen.generate()};
+
+    util::visualize_graph<false>(&tree_sep);
+
+    std::cout << "preprocessing queries: " << tree_sep.preprocessing_queries() << std::endl;
+    std::cout << " similarity: " << tree_sep.similarity() << std::endl;
 
     return 0;
 }

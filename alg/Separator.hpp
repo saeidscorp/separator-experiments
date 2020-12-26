@@ -11,7 +11,7 @@
 namespace alg {
 
     template<bool bidirectional_graph>
-    class Separator : public Oracle<bidirectional_graph> {
+    class Separator : public Oracle<bidirectional_graph>, public virtual model::Graph<bidirectional_graph> {
     protected:
 
         size_t _seps_count;
@@ -22,8 +22,10 @@ namespace alg {
 
         std::vector<model::Node *> selected_nodes;
 
+        std::map<int, bool> marked;
+
         // could've used a functor instead of this charade
-        static constexpr auto table_comparator = [](model::endpoints const& lhs, model::endpoints const& rhs) {
+        static constexpr auto table_comparator = [](model::endpoints const &lhs, model::endpoints const &rhs) {
 
             if constexpr (!bidirectional_graph) {
                 return lhs < rhs;
@@ -68,6 +70,8 @@ namespace alg {
         [[nodiscard]] double similarity() const;
 
         [[nodiscard]] unsigned preprocessing_queries() const;
+
+        [[nodiscard]] std::string dotString() const override;
     };
 
 }

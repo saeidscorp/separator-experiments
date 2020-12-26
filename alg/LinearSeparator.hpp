@@ -14,7 +14,7 @@
 namespace alg {
 
     template<bool bidirectional_graph>
-    class LinearSeparator : public Separator<bidirectional_graph> {
+    class LinearSeparator : public Separator<bidirectional_graph>, public virtual Graph<bidirectional_graph> {
     protected:
 
         void preprocess(Oracle<bidirectional_graph> *oracle) override;
@@ -31,6 +31,10 @@ namespace alg {
         explicit LinearSeparator(const model::Graph<bidirectional_graph> *graph);
 
         explicit LinearSeparator(Oracle<bidirectional_graph> *oracle);
+
+        [[nodiscard]] std::string dotString() const override {
+            return Separator<bidirectional_graph>::dotString();
+        }
 
     };
 

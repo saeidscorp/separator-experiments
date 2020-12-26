@@ -66,3 +66,34 @@ Graph<false> *Tree::toGraph() const {
 Node *Tree::operator[](Node *node) const {
     return _parents.at(node);
 }
+
+Node *Tree::root() const {
+    return _root;
+}
+
+std::string Tree::dotString() const {
+
+    std::string edge_specifier = " -> ", graph_specifier = " digraph ";
+
+    std::stringstream ss;
+    ss << graph_specifier << " {" << std::endl;
+
+    for (auto iter = this->_node_map->begin(); iter != this->_node_map->end(); iter++) {
+        auto node = iter->second;
+        std::string *name = node->getName();
+        if (name->empty()) continue;
+
+        ss << "    " << node->getId();
+        ss << " [label=\"" << *name << "\"];" << std::endl;
+    }
+
+    for (auto iter = this->_edge_map->begin(); iter != this->_edge_map->end(); iter++) {
+        auto edge = iter->second;
+        ss << "    ";
+        ss << edge->getFrom()->getId() << edge_specifier << edge->getTo()->getId();
+        ss << std::endl;
+    }
+
+    ss << "}" << std::endl;
+    return ss.str();
+}

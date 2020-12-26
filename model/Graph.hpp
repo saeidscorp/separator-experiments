@@ -17,7 +17,7 @@ namespace model {
 
     template<bool bidirectional_graph = true>
     class Graph {
-    private:
+    protected:
         std::map<int, Node *> *_node_map;
         std::map<int, Edge *> *_edge_map;
 
@@ -89,7 +89,7 @@ namespace model {
 
         [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
 
-        [[nodiscard]] std::string dotString() const;
+        [[nodiscard]] virtual std::string dotString() const;
 
         double similarity(model::Graph<bidirectional_graph> *graph) const;
 

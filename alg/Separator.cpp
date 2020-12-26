@@ -19,7 +19,7 @@ Separator<bidirectional>::Separator(const model::Graph<bidirectional> *graph)
 template<bool bidirectional_graph>
 double Separator<bidirectional_graph>::similarity() const {
     Oracle<bidirectional_graph> oracle(this->getGraph());
-    return oracle.similarity(this);
+    return oracle.similarity(static_cast<const Oracle<bidirectional_graph> *>(this));
 }
 
 template<bool bidirectional_graph>
@@ -58,4 +58,40 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     if (to != *sel_to) path.push_back(to);
 
     return model::path_length(path, total_eta);
+}
+
+template<bool bidirectional_graph>
+std::string Separator<bidirectional_graph>::dotString() const {
+
+    std::string edge_specifier, graph_specifier;
+    if constexpr (bidirectional_graph) {
+        graph_specifier = "graph";
+        edge_specifier = " -- ";
+    } else {
+        graph_specifier = "digraph";
+        edge_specifier = " -> ";
+    }
+
+    std::stringstream ss;
+    ss << graph_specifier << " {" << std::endl;
+
+    for (auto &node : this->graph->getNodes()) {
+        std::string *name = node->getName();
+        if (name->empty()) continue;
+
+        ss << "    " << node->getId();
+        ss << " [label=\"" << *name << "\"";
+        if (this->marked.at(node->getId()))
+            ss << ", color=green";
+        ss << "];" << std::endl;
+    }
+
+    for (auto &edge : this->graph->getEdges()) {
+        ss << "    ";
+        ss << edge->getFrom()->getId() << edge_specifier << edge->getTo()->getId();
+        ss << std::endl;
+    }
+
+    ss << "}" << std::endl;
+    return ss.str();
 }

@@ -44,9 +44,15 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
 
     auto sum_of_path_lengths = 0;
 
+    std::transform(all_nodes.cbegin(), all_nodes.cend(), std::inserter(this->marked, this->marked.end()),
+                   [&](const auto &p) {
+                       return std::make_pair(p->getId(), false);
+                   });
+
     Node *prev = nullptr;
     for (auto i = 0ul; i < this->_seps_count; ++i) {
         auto current = this->selected_nodes[i];
+        this->marked[current->getId()] = true;
         if (prev) {
 
             auto place_in_table = [this, &sum_of_path_lengths](const auto &node_pair, const auto &result) {

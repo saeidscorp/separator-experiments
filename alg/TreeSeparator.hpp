@@ -12,7 +12,7 @@
 namespace alg {
 
     template<bool bidirectional_graph>
-    class TreeSeparator : public Separator<bidirectional_graph> {
+    class TreeSeparator : public Separator<bidirectional_graph>, public virtual model::Tree {
     protected:
 
         model::Tree decomposition;
@@ -31,6 +31,12 @@ namespace alg {
         explicit TreeSeparator(const model::Graph<bidirectional_graph> *graph);
 
         explicit TreeSeparator(Oracle<bidirectional_graph> *oracle);
+
+        [[nodiscard]] std::string dotString() const override {
+            return Separator<bidirectional_graph>::dotString();
+        }
+
+        using Separator<bidirectional_graph>::similarity;
 
     };
 

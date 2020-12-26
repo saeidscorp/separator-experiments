@@ -30,7 +30,11 @@ namespace model {
 
         Node *operator[](Node *node) const;
 
-        [[nodiscard]] model::Graph<false> *toGraph() const;
+        [[nodiscard]] Node *root() const;
+
+        [[nodiscard]] Graph<false> *toGraph() const;
+
+        [[nodiscard]] std::string dotString() const override;
 
     };
 
