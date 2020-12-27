@@ -16,7 +16,7 @@ int main(int argc, const char **argv) {
 
     int n = 16;
 
-    auto graph_size = get_cmd_option(argc, argv, "-n");
+    auto graph_size = util::get_cmd_option(argc, argv, "-n");
     if (graph_size)
         n = std::stoi(graph_size.value());
 

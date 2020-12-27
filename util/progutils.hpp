@@ -5,17 +5,20 @@
 #ifndef SEPARATOR_PROGUTILS_HPP
 #define SEPARATOR_PROGUTILS_HPP
 
-std::optional<std::string> get_cmd_option(const char ** begin, const char ** end, const std::string & option)
-{
-    const char ** itr = std::find(begin, end, option);
-    if (itr != end && ++itr != end)
-        return *itr;
-    return {};
-}
+namespace util {
 
-std::optional<std::string> get_cmd_option(const int argc, const char **argv, const std::string & option)
-{
-    return get_cmd_option(argv, argv + argc, option);
+    inline
+    std::optional<std::string> get_cmd_option(const char **begin, const char **end, const std::string &option) {
+        const char **itr = std::find(begin, end, option);
+        if (itr != end && ++itr != end)
+            return *itr;
+        return {};
+    }
+
+    inline
+    std::optional<std::string> get_cmd_option(const int argc, const char **argv, const std::string &option) {
+        return get_cmd_option(argv, argv + argc, option);
+    }
 }
 
 #endif //SEPARATOR_PROGUTILS_HPP

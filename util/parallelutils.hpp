@@ -12,6 +12,7 @@
 
 namespace util {
 
+    template<typename _ = void>
     void parallel_for(unsigned start, unsigned end, std::function<void(unsigned)> fn, bool par = true) {
 
         // internal loop

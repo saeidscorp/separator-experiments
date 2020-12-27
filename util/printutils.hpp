@@ -8,10 +8,12 @@
 #include <iostream>
 
 #include "subprocess.hpp"
+#include "../alg/Oracle.hpp"
 
 namespace util {
 
-    void print_path(const Node *n1, const Node *n2, query_result &result) {
+    template<typename _ = void>
+    void print_path(const Node *n1, const Node *n2, alg::query_result &result) {
         if (result)
             std::cout << "eta from " << n1->getId() << " to " << n2->getId() << " is: " << result.value().second
                       << std::endl;
