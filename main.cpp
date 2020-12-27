@@ -29,7 +29,7 @@ int main(int argc, const char **argv) {
     util::visualize_graph<false>(&tree_sep);
 
     std::cout << "preprocessing queries: " << tree_sep.preprocessing_queries() << std::endl;
-    std::cout << " similarity: " << tree_sep.similarity() << std::endl;
+//    std::cout << "similarity: " << tree_sep.similarity() << std::endl;
 
     return 0;
 }

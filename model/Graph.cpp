@@ -300,6 +300,19 @@ void Graph<bidirectional_graph>::disconnect(Node *from, Node *to) {
         remove_edge<bidirectional>(*edge);
 }
 
+template<bool bidirectional_graph>
+template<bool bidirectional>
+void Graph<bidirectional_graph>::disconnect(int from_id, int to_id) {
+    auto from = _node_map->at(from_id), to = _node_map->at(to_id);
+    disconnect<bidirectional>(from, to);
+}
+
+template<bool bidirectional_graph>
+template<bool bidirectional>
+void Graph<bidirectional_graph>::disconnect(Edge *edge) {
+    remove_edge<bidirectional>(edge);
+}
+
 //namespace model {
 //    template class Graph<true>;
 //    template class Graph<false>;
