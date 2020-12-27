@@ -88,30 +88,17 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
 }
 
 template<bool bidirectional_graph>
-model::ETA
-LinearSeparator<bidirectional_graph>::eta_selectives(nodes_iterator from_it,
-                                                     nodes_iterator to_it) const {
+model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, model::Node *to) const {
 
-    if (from_it == this->selected_nodes.end() || to_it == this->selected_nodes.end())
-        throw std::runtime_error("Inputs to the `eta_selectives` must be part of selectives.");
+    model::path path;
 
-    auto accumulate = [this](auto begin, auto end) {
-        return std::accumulate(begin, end, 0.,
-                               [this](const auto &sum, const auto &pair) {
-                                   const auto &[left, right] = pair;
-                                   auto lookup = this->table.find({left, right});
-                                   if (sum < 0 || lookup == this->table.end())
-                                       return -1.;
-                                   return sum + (*lookup).second;
-                               });
-    };
+    auto sel_from = this->closest_separator(from), sel_to = this->closest_separator(to);
 
-    if (from_it < to_it) {
-        auto adj_selected = util::adjacent_pairs(from_it, std::next(to_it));
-        return accumulate(adj_selected.begin(), adj_selected.end());
-    } else {
-        auto adj_selected = util::adjacent_pairs<true>(to_it, std::next(from_it));
-        return accumulate(adj_selected.begin(), adj_selected.end());  // fixme: get rid of reverse
-    }
+    if (sel_from < sel_to)
+        std::copy(sel_from, std::next(sel_to), std::back_inserter(path));
+    else
+        std::copy(std::reverse_iterator(std::next(sel_from)), std::reverse_iterator(sel_to),
+                  std::back_inserter(path));
 
+    return path;
 }

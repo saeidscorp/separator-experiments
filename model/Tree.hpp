@@ -36,6 +36,8 @@ namespace model {
 
         [[nodiscard]] Node *root() const;
 
+        void root(Node *root_node);
+
         [[nodiscard]] Graph<false> *toGraph() const;
 
         [[nodiscard]] std::string dotString() const override;

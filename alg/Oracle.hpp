@@ -14,8 +14,6 @@ namespace alg {
 
     typedef std::optional<model::path_length> query_result;
 
-//    typedef std::function<ETA(model::endpoints)> query_function;
-
     template<bool bidirectional_graph>
     class Oracle {
     protected:

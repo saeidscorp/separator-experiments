@@ -9,6 +9,7 @@
 
 #include "CentroidDecomposition.hpp"
 #include "../util/funcutils.hpp"
+#include "../util/printutils.hpp"
 
 using namespace alg;
 
@@ -68,23 +69,39 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
                        return std::make_pair(p->getId(), false);
                    });
 
-    auto fill_nodes = util::recursive_lambda([&](auto &&fill_nodes, model::Node *node, model::Node *parent) -> bool {
-        auto marked_subtrees_count = 0;
+    auto fill_nodes = util::recursive_lambda([&](auto &&fill_nodes,
+                                                 model::Node *node,
+                                                 model::Node *parent) -> Node * {
+
+        std::vector<Node *> marked_children;
+
         for (auto neighbor : node->getNeighs()) {
             if (neighbor == parent) continue;
-            if (fill_nodes(neighbor, node))
-                marked_subtrees_count++;
+            auto subtree_node = fill_nodes(neighbor, node);
+            if (subtree_node)
+                marked_children.push_back(subtree_node);
         }
+
         auto marked = this->marked[node->getId()];
-        if (marked_subtrees_count > 1 && !marked) {
+        if (marked_children.size() > 1 && !marked) {
             this->selected_nodes.push_back(node);
             this->marked[node->getId()] = true;
         }
-        return marked_subtrees_count || marked;
+
+        if (marked) {
+            auto new_node = decomposition.createNode(node);
+            for (auto subtree_child : marked_children)
+                decomposition.connect(new_node, subtree_child);
+            return new_node;
+        }
+        if (!marked_children.empty())
+            return marked_children[0];
+        return nullptr;
     });
 
     auto original_root = all_nodes[0];
-    fill_nodes(original_root, original_root);
+    auto new_root = fill_nodes(original_root, original_root);
+    decomposition.root(new_root);
 
     auto new_size = this->selected_nodes.size();
     std::cout << "selected nodes went from " << selected_count << " to " << new_size
@@ -102,22 +119,20 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
     };
 
     auto dfs = util::recursive_lambda([&](auto &&dfs, model::Node *node,
-                                          model::Node *parent,
-                                          model::Node *prev) -> void {
+                                          model::Node *parent) -> void {
 
-        auto marked = false;
-        if (this->marked[node->getId()])
-            marked = true;
+        if (parent != node) {
+            auto original_parent = *graph->getNode(parent->getId());
+            auto original_node = *graph->getNode(node->getId());
 
-        if (marked && prev != nullptr) {
-            endpoints node_pair{prev, node};
+            endpoints node_pair{original_parent, original_node};
             auto result = oracle->query(node_pair);
             place_in_table(node_pair, result);
 
             decltype(result) result_rev;
 
             if constexpr (!bidirectional_graph) {
-                endpoints node_pair_rev{node, prev};
+                endpoints node_pair_rev{original_node, original_parent};
                 result_rev = oracle->query(node_pair_rev);
                 place_in_table(node_pair_rev, result);
             }
@@ -126,22 +141,46 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
                 std::cerr << "there is a disconnection between the tree's nodes." << std::endl;
         }
 
-        if (marked)
-            prev = node;
-
         for (auto neighbor : node->getNeighs())
             if (neighbor != parent)
-                dfs(neighbor, node, prev);
+                dfs(neighbor, node);
     });
 
-    dfs(original_root, original_root, nullptr);
+    dfs(decomposition.root(), decomposition.root());
 
-    this->_avg_path_length = (ETA) sum_of_path_lengths / (this->_seps_count - 1);
     this->preprocessing_num_queries = oracle->queries() - starting_count;
+    this->_avg_path_length = (ETA) sum_of_path_lengths / this->preprocessing_num_queries;
 }
 
 template<bool bidirectional_graph>
-ETA TreeSeparator<bidirectional_graph>::eta_selectives(nodes_iterator from_it,
-                                                       nodes_iterator to_it) const {
-    return 0;
+model::path TreeSeparator<bidirectional_graph>::find_path(model::Node *from, model::Node *to) const {
+    model::path path;
+
+    auto path_to_root = [&](model::Node *node) {
+        model::path root_path;
+
+        auto parent = *decomposition[node];
+
+        while (parent != node) {
+            root_path.push_back(node);
+            node = parent;
+            parent = *decomposition[node];
+        }
+
+        root_path.reverse();
+        return root_path;
+    };
+
+    auto sel_from = this->closest_separator(from), sel_to = this->closest_separator(to);
+    auto from_path = path_to_root(*sel_from), to_path = path_to_root(*sel_to);
+
+    auto from_it = from_path.cbegin(), to_it = to_path.cbegin();
+    for (; from_it != from_path.cend() && to_it != to_path.cend() &&
+           *from_it != *to_it;
+           ++from_it, ++to_it);
+
+    std::copy(from_path.crbegin(), std::reverse_iterator(std::prev(from_it)), std::back_inserter(path));
+    std::copy(to_it, to_path.cend(), std::back_inserter(path));
+
+    return path;
 }

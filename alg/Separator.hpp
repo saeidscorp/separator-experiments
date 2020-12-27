@@ -52,10 +52,9 @@ namespace alg {
             });
         }
 
-        typedef decltype(selected_nodes)::const_iterator nodes_iterator;
+        [[nodiscard]] ETA eta_selectives(const model::path& selectives_path) const;
 
-        [[nodiscard]] virtual ETA eta_selectives(nodes_iterator from_it,
-                                                 nodes_iterator to_it) const = 0;
+        [[nodiscard]] virtual model::path find_path(model::Node *from, model::Node *to) const = 0;
 
         [[nodiscard]] query_result do_query(model::endpoints ep) const override;
 
@@ -70,6 +69,8 @@ namespace alg {
         [[nodiscard]] double similarity() const;
 
         [[nodiscard]] unsigned preprocessing_queries() const;
+
+        [[nodiscard]] double average_path_length() const;
 
         [[nodiscard]] std::string dotString() const override;
     };

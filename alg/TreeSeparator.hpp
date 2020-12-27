@@ -19,12 +19,7 @@ namespace alg {
 
         void preprocess(Oracle<bidirectional_graph> *oracle) override;
 
-        using typename Separator<bidirectional_graph>::nodes_iterator;
-
-        [[nodiscard]] ETA
-        eta_selectives(nodes_iterator from_it,
-                       nodes_iterator to_it)
-        const override;
+        [[nodiscard]] model::path find_path(model::Node *from, model::Node *to) const override;
 
     public:
 

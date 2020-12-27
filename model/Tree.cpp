@@ -110,3 +110,10 @@ void Tree::remove_edge(Edge *edge) {
     _parents.erase(edge->getTo());
     Graph::remove_edge(edge);
 }
+
+void Tree::root(Node *root_node) {
+    auto root_it = _node_map->find(root_node->getId());
+    if (root_it == _node_map->end() || root_it->second != root_node)
+        throw std::runtime_error("Node can't be root. it's not in the tree.");
+    _root = root_node;
+}
