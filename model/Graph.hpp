@@ -30,11 +30,9 @@ namespace model {
 
         void add_node(Node *node);
 
-        template<bool bidirectional = bidirectional_graph>
-        void add_edge(Edge *edge);
+        virtual void add_edge(Edge *edge);
 
-        template<bool bidirectional = bidirectional_graph>
-        void remove_edge(Edge *edge);
+        virtual void remove_edge(Edge *edge);
 
     public:
         Graph();
@@ -47,28 +45,20 @@ namespace model {
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to, Edge *edge);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to, double max_speed, ETA eta = ETA{}, std::string name = std::string());
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id, double max_speed, ETA eta = ETA{}, std::string name = std::string());
 
-        template<bool bidirectional = bidirectional_graph>
         void disconnect(Node *from, Node *to);
 
-        template<bool bidirectional = bidirectional_graph>
         void disconnect(int from_id, int to_id);
 
-        template<bool bidirectional = bidirectional_graph>
         void disconnect(Edge *edge);
 
         [[nodiscard]] std::size_t size() const;

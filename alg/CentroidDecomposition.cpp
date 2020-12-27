@@ -15,9 +15,6 @@ template CentroidDecomposition::CentroidDecomposition(const model::Graph<true> *
 
 template CentroidDecomposition::CentroidDecomposition(const model::Graph<false> *tree_graph);
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
-
 template<bool bidirectional_graph>
 void CentroidDecomposition::build(const Graph<bidirectional_graph> *graph) {
 
@@ -104,4 +101,3 @@ void CentroidDecomposition::build(const Graph<bidirectional_graph> *graph) {
 
 }
 
-#pragma clang diagnostic pop

@@ -16,9 +16,6 @@ TreeGenerator::TreeGenerator() : TreeGenerator(7) {}
 TreeGenerator::TreeGenerator(int node_count, int branching_min, int branching_max)
         : _node_count(node_count), _branching_min(branching_min), _branching_max(branching_max) {}
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
-
 model::Graph<true> *TreeGenerator::generate() {
     auto graph = new model::Graph<true>;
 
@@ -49,5 +46,3 @@ model::Graph<true> *TreeGenerator::generate() {
 
     return graph;
 }
-
-#pragma clang diagnostic pop

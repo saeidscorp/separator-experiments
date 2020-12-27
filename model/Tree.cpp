@@ -63,8 +63,11 @@ Graph<false> *Tree::toGraph() const {
     return new Graph(*this);
 }
 
-Node *Tree::operator[](Node *node) const {
-    return _parents.at(node);
+std::optional<Node *> Tree::operator[](Node *node) const {
+    auto node_it = _parents.find(node);
+    if (node_it != _parents.end())
+        return {node_it->second};
+    return {};
 }
 
 Node *Tree::root() const {
@@ -96,4 +99,14 @@ std::string Tree::dotString() const {
 
     ss << "}" << std::endl;
     return ss.str();
+}
+
+void Tree::add_edge(Edge *edge) {
+    _parents[edge->getFrom()] = edge->getTo();
+    Graph::add_edge(edge);
+}
+
+void Tree::remove_edge(Edge *edge) {
+    _parents.erase(edge->getTo());
+    Graph::remove_edge(edge);
 }

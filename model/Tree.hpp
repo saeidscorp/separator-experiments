@@ -12,6 +12,10 @@ namespace model {
     class Tree : public Graph<false> {
     protected:
 
+        void add_edge(Edge *edge) override;
+
+        void remove_edge(Edge *edge) override;
+
         std::map<model::Node *, model::Node *> _parents;
 
         model::Node *_root;
@@ -28,7 +32,7 @@ namespace model {
 
         Tree(const Tree &other);
 
-        Node *operator[](Node *node) const;
+        std::optional<Node *> operator[](Node *node) const;
 
         [[nodiscard]] Node *root() const;
 

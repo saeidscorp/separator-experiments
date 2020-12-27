@@ -36,6 +36,7 @@ Node *Graph<bidirectional_graph>::createNode() {
 template<bool bidirectional_graph>
 Node *Graph<bidirectional_graph>::createNode(const Node *node) {
     auto copy = new Node(*node);
+    _current_node_id = std::max(_current_node_id, node->getId());
     add_node(copy);
     return copy;
 }
@@ -60,42 +61,38 @@ int Graph<bidirectional_graph>::_next_edge_id() {
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 void Graph<bidirectional_graph>::add_edge(Edge *edge) {
     auto from = edge->getFrom();
     auto to = edge->getTo();
     from->connect(edge);
-    if constexpr (bidirectional) {
+    if constexpr (bidirectional_graph) {
         to->connect(edge);
     }
     _edge_map->insert({edge->getId(), edge});
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to) {
     auto edge = from->connect(to);
     edge->setId(_next_edge_id());
-    add_edge<bidirectional>(edge);
+    add_edge(edge);
     return edge;
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, Edge *edge) {
     if (_edge_map->contains(edge->getId()))
         return edge;
     auto copy = new Edge(*edge);
     copy->setFrom(from);
     copy->setTo(to);
-    add_edge<bidirectional>(copy);
+    add_edge(copy);
     return copy;
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, double max_speed, ETA eta, std::string name) {
-    auto edge = connect<bidirectional>(from, to);
+    auto edge = connect(from, to);
     edge->setMaxSpeed(max_speed);
     edge->setEta(eta);
     edge->setName(new std::string(std::move(name)));
@@ -103,19 +100,17 @@ Edge *Graph<bidirectional_graph>::connect(Node *from, Node *to, double max_speed
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id) {
     auto from_node = _node_map->at(from_id);
     auto to_node = _node_map->at(to_id);
-    return connect<bidirectional>(from_node, to_node);
+    return connect(from_node, to_node);
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 Edge *Graph<bidirectional_graph>::connect(int from_id, int to_id, double max_speed, ETA eta, std::string name) {
     auto from_node = _node_map->at(from_id);
     auto to_node = _node_map->at(to_id);
-    return connect<bidirectional>(from_node, to_node, max_speed, eta, name);
+    return connect(from_node, to_node, max_speed, eta, name);
 }
 
 template<bool bidirectional_graph>
@@ -281,36 +276,32 @@ double Graph<bidirectional_graph>::similarity(model::Graph<bidirectional_graph> 
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 void Graph<bidirectional_graph>::remove_edge(Edge *edge) {
     auto from = edge->getFrom();
     auto to = edge->getTo();
     from->disconnect(edge);
-    if constexpr (bidirectional) {
+    if constexpr (bidirectional_graph) {
         to->disconnect(edge);
     }
     _edge_map->erase(edge->getId());
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 void Graph<bidirectional_graph>::disconnect(Node *from, Node *to) {
     auto edge = from->getEdgeOf(to);
     if (edge)
-        remove_edge<bidirectional>(*edge);
+        remove_edge(*edge);
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 void Graph<bidirectional_graph>::disconnect(int from_id, int to_id) {
     auto from = _node_map->at(from_id), to = _node_map->at(to_id);
-    disconnect<bidirectional>(from, to);
+    disconnect(from, to);
 }
 
 template<bool bidirectional_graph>
-template<bool bidirectional>
 void Graph<bidirectional_graph>::disconnect(Edge *edge) {
-    remove_edge<bidirectional>(edge);
+    remove_edge(edge);
 }
 
 //namespace model {

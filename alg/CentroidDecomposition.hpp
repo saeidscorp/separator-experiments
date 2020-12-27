@@ -15,13 +15,8 @@ namespace alg {
     class CentroidDecomposition : public model::Tree {
     private:
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "HidingNonVirtualFunction"
-
         template<bool bidirectional_graph>
         void build(const model::Graph<bidirectional_graph> *graph);
-
-#pragma clang diagnostic pop
 
     public:
 
