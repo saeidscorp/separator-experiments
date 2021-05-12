@@ -9,7 +9,7 @@ Separator<bidirectional_graph>::Separator(Oracle<bidirectional_graph> *oracle)
         : Oracle<bidirectional_graph>(oracle->getGraph()), preprocessing_num_queries(0), _avg_path_length(0) {
 
     auto nodes_count = oracle->getGraph()->getNodes().size();
-    _seps_count = std::sqrt(std::max(nodes_count, 2ul) - 2) + 2;
+    _seps_count = std::sqrt(std::max(nodes_count, 2ull) - 2) + 2;
 }
 
 template<bool bidirectional>

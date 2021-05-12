@@ -78,7 +78,7 @@ template<bool bidirectional_graph>
 Graph<bidirectional_graph> *model::random_weights(Graph<bidirectional_graph> *g) {
     auto g_copy = new Graph<bidirectional_graph>(*g);
     auto nodes = g->getNodes();
-    auto start_index = 0ul, end_index = nodes.size() - 1;
+    auto start_index = 0ull, end_index = nodes.size() - 1;
     for (auto i = start_index; i < end_index; ++i)
         for (auto j = start_index; j < end_index; ++j) {
             auto from = nodes[i], to = nodes[j];

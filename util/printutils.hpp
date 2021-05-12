@@ -6,6 +6,7 @@
 #define SEPARATOR_PRINTUTILS_HPP
 
 #include <iostream>
+#include <fstream>
 
 #include "subprocess.hpp"
 #include "../alg/Oracle.hpp"
@@ -32,9 +33,15 @@ namespace util {
 
     template<bool bidirectional>
     void visualize_graph(const model::Graph<bidirectional> *graph) {
+        using subprocess::CompletedProcess;
+        using subprocess::PipeOption;
 
-        subprocess::popen mktemp_process{"mktemp", {"-t", "tmp.separator.viz.XXXXXXXXXX"}};
-        std::string temp_name{std::istreambuf_iterator(mktemp_process.stdout()), {}};
+        auto process = subprocess::run({"mktemp", "-t", "tmp.separator.viz.XXXXXXXXXX"}, {
+            .check = true,
+            .cout = PipeOption::pipe
+        });
+//        std::string temp_name{std::istreambuf_iterator(mktemp_process.stdout()), {}};
+        std::string temp_name{process.cout};
         temp_name.erase(std::remove_if(temp_name.begin(), temp_name.end(), ::isspace), temp_name.end());
         auto gv_file = temp_name + ".gv";
         auto image_file = temp_name + ".png";
@@ -44,10 +51,14 @@ namespace util {
         gv_stream << dot_string;
         gv_stream.close();
 
-        subprocess::popen dot{"dot", {"-Tpng", "-o", image_file, gv_file}};
-        if (dot.wait())
+        auto dot_process = subprocess::run({"dot", "-Tpng", "-o", image_file, gv_file}, {
+            .check = false,
+            .cout = PipeOption::pipe
+        });
+        if (dot_process.returncode)
             throw std::runtime_error("`dot` process failed.");
 
+        // FIXME: must migrate this to windows
         std::system(("bash -c 'gwenview " + image_file
                      + " >/dev/null 2>&1 && rm " + image_file + " " + gv_file + " " + temp_name + "' &").c_str());
     }

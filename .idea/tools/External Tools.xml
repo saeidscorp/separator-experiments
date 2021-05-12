@@ -3,7 +3,7 @@
     <exec>
       <option name="COMMAND" value="scan-build" />
       <option name="PARAMETERS" value="scan-build --use-cc /usr/bin/clang --use-c++ /usr/bin/clang++ --use-analyzer /usr/bin/clang-10 -v -k -V ninja" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Projects/Traffic-Analysis/Experiments/separator/build/debug" />
+      <option name="WORKING_DIRECTORY" value="C:/Users/Saeid/Projects/Traffic-Analysis/Experiments/separator/build/debug" />
     </exec>
   </tool>
 </toolSet>
