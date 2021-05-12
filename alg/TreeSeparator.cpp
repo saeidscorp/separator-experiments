@@ -61,13 +61,11 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
         }
     };
 
-    bfs(cd.root(), this->_seps_count);
-
-    int selected_count = this->selected_nodes.size();
     std::transform(all_nodes.cbegin(), all_nodes.cend(), std::inserter(this->marked, this->marked.end()),
                    [&](const auto &p) {
                        return std::make_pair(p->getId(), false);
                    });
+    bfs(cd.root(), this->_seps_count);
 
     auto fill_nodes = util::recursive_lambda([&](auto &&fill_nodes,
                                                  model::Node *node,
@@ -78,14 +76,14 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
         for (auto neighbor : node->getNeighs()) {
             if (neighbor == parent) continue;
             auto subtree_node = fill_nodes(neighbor, node);
-            if (subtree_node)
+            if (subtree_node != nullptr)
                 marked_children.push_back(subtree_node);
         }
 
-        auto marked = this->marked[node->getId()];
+        bool marked = this->marked[node->getId()];
         if (marked_children.size() > 1 && !marked) {
             this->selected_nodes.push_back(node);
-            this->marked[node->getId()] = true;
+            this->marked[node->getId()] = marked = true;
         }
 
         if (marked) {
@@ -99,13 +97,14 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
         return nullptr;
     });
 
+    int selected_count = this->selected_nodes.size();
+
     auto original_root = all_nodes[0];
     auto new_root = fill_nodes(original_root, original_root);
-    decomposition.root(new_root);
 
     auto new_size = this->selected_nodes.size();
-    std::cout << "selected nodes went from " << selected_count << " to " << new_size
-              << " (increased by " << new_size - selected_count << ")" << std::endl;
+
+    decomposition.root(new_root);
 
     auto sum_of_path_lengths = 0;
 
@@ -150,6 +149,9 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
 
     this->preprocessing_num_queries = oracle->queries() - starting_count;
     this->_avg_path_length = (ETA) sum_of_path_lengths / this->preprocessing_num_queries;
+
+    std::cout << "selected nodes went from " << selected_count << " to " << new_size
+              << " (increased by " << new_size - selected_count << ")" << std::endl;
 }
 
 template<bool bidirectional_graph>

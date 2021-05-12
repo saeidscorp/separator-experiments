@@ -68,6 +68,8 @@ namespace alg {
 
         [[nodiscard]] double similarity() const;
 
+        [[nodiscard]] double similarity_random() const;
+
         [[nodiscard]] unsigned preprocessing_queries() const;
 
         [[nodiscard]] double average_path_length() const;

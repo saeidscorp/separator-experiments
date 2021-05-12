@@ -23,6 +23,12 @@ double Separator<bidirectional_graph>::similarity() const {
 }
 
 template<bool bidirectional_graph>
+double Separator<bidirectional_graph>::similarity_random() const {
+    Oracle<bidirectional_graph> oracle(this->getGraph());
+    return oracle.similarity_random(static_cast<const Oracle<bidirectional_graph> *>(this));
+}
+
+template<bool bidirectional_graph>
 unsigned Separator<bidirectional_graph>::preprocessing_queries() const {
     return Separator<bidirectional_graph>::preprocessing_num_queries;
 }
@@ -59,6 +65,7 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     return model::path_length(path, total_eta);
 }
 
+
 template<bool bidirectional_graph>
 model::ETA
 Separator<bidirectional_graph>::eta_selectives(const model::path& selectives_path) const {
@@ -84,7 +91,6 @@ Separator<bidirectional_graph>::eta_selectives(const model::path& selectives_pat
     auto adj_selected = util::adjacent_pairs(from_it, to_it);
     return accumulate(adj_selected.begin(), adj_selected.end());
 }
-
 
 template<bool bidirectional_graph>
 std::string Separator<bidirectional_graph>::dotString() const {

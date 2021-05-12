@@ -37,9 +37,11 @@ namespace alg {
 
         query_result query(model::Node *node1, model::Node *node2);
 
-        double similarity(const Oracle<bidirectional_graph> *other_oracle) const;
+        [[nodiscard]] double similarity(const Oracle<bidirectional_graph> *other_oracle) const;
 
-        double similarity(const model::Graph<bidirectional_graph> *other_graph) const;
+        [[nodiscard]] double similarity(const model::Graph<bidirectional_graph> *other_graph) const;
+
+        [[nodiscard]] double similarity_random(const Oracle<bidirectional_graph> *other_oracle) const;
 
         [[nodiscard]] model::Graph<bidirectional_graph> *getGraph() const;
 

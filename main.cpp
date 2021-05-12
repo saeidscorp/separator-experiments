@@ -29,7 +29,8 @@ int main(int argc, const char **argv) {
     util::visualize_graph<false>(&tree_sep);
 
     std::cout << "preprocessing queries: " << tree_sep.preprocessing_queries() << std::endl;
-    std::cout << "similarity: " << tree_sep.similarity() << std::endl;
+//    std::cout << "similarity: " << tree_sep.similarity() << std::endl;
+    std::cout << "random similarity: " << tree_sep.similarity_random() << std::endl;
     std::cout << "average path length of queries: " << tree_sep.average_path_length() << std::endl;
 
     return 0;

@@ -11,6 +11,10 @@
 
 #include "../util/stlutils.hpp"
 
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
+
 using namespace alg;
 
 template<bool bidirectional_graph>
@@ -56,7 +60,8 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 
 
     auto get_score = [](score_map *smap, model::Node *node) {
-        return smap->contains(node) ? smap->at(node) : std::numeric_limits<ETA>::max();
+        auto it = smap->find(node);
+        return it != smap->end() ? it->second : std::numeric_limits<ETA>::max();
     };
 
 
@@ -99,7 +104,7 @@ query_result Oracle<bidirectional_graph>::do_query(model::endpoints ep) const {
 template<bool bidirectional_graph>
 query_result Oracle<bidirectional_graph>::query(model::endpoints ep) {
     num_queries++;
-    util::map_value_default(frequencies, ep, [] (int c) { return c + 1; });
+    util::map_value_default(frequencies, ep, [](int c) { return c + 1; });
     // todo: make this a part of Graph class and make it more robust
     if (graph->getNode(ep.first->getId()) != ep.first ||
         graph->getNode(ep.second->getId()) != ep.second) {
@@ -162,6 +167,42 @@ template<bool bidirectional_graph>
 double Oracle<bidirectional_graph>::similarity(const model::Graph<bidirectional_graph> *other_graph) const {
     Oracle<bidirectional_graph> oracle(other_graph);
     return similarity(&oracle);
+}
+
+template<bool bidirectional_graph>
+double Oracle<bidirectional_graph>::similarity_random(const Oracle<bidirectional_graph> *other_oracle) const {
+    auto ref_graph = this->getGraph();
+    auto other_graph = other_oracle->getGraph();
+
+    double error_sum = 0;
+
+    auto nodes = ref_graph->getNodes();
+    const auto query_count = nodes.size();
+
+    for (unsigned i = 0; i < query_count; ++i) {
+
+        auto from_node = *Random::get(nodes);
+        decltype(from_node) to_node;
+        do to_node = *Random::get(nodes);
+        while (to_node == from_node);
+
+        auto sep_eta = do_query({from_node, to_node});
+        if (!sep_eta) {
+            i--;
+            continue;
+        }
+
+        auto from = other_graph->getNode(from_node->getId()), to = other_graph->getNode(to_node->getId());
+        if (!from || !to)
+            std::cerr << "node not available in second graph for similarity computation" << std::endl;
+        auto oracle_eta = other_oracle->do_query({from.value(), to.value()});
+        if (!oracle_eta)
+            std::cerr << "oracle query unavailable" << std::endl;
+
+        error_sum += std::abs(oracle_eta.value().second - sep_eta.value().second);
+    }
+
+    return error_sum / query_count;
 }
 
 //namespace alg {

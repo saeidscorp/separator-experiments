@@ -102,7 +102,7 @@ std::string Tree::dotString() const {
 }
 
 void Tree::add_edge(Edge *edge) {
-    _parents[edge->getFrom()] = edge->getTo();
+    _parents[edge->getTo()] = edge->getFrom();
     Graph::add_edge(edge);
 }
 
