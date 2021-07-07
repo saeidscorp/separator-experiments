@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 #include "subprocess.hpp"
 #include "../alg/Oracle.hpp"
@@ -35,16 +36,24 @@ namespace util {
     void visualize_graph(const model::Graph<bidirectional> *graph) {
         using subprocess::CompletedProcess;
         using subprocess::PipeOption;
+        namespace fs = std::filesystem;
 
+#ifdef WIN32
+        fs::path temp_dir{std::getenv("TEMP")};
+        std::string temp_name{"tmp.separator.viz.XXXXXXXXXX"};
+        mkstemp(temp_name.data());
+        std::string temp_path = (temp_dir / temp_name).string();
+#else
         auto process = subprocess::run({"mktemp", "-t", "tmp.separator.viz.XXXXXXXXXX"}, {
             .check = true,
             .cout = PipeOption::pipe
         });
-//        std::string temp_name{std::istreambuf_iterator(mktemp_process.stdout()), {}};
-        std::string temp_name{process.cout};
-        temp_name.erase(std::remove_if(temp_name.begin(), temp_name.end(), ::isspace), temp_name.end());
-        auto gv_file = temp_name + ".gv";
-        auto image_file = temp_name + ".png";
+
+        std::string temp_path{process.cout};
+#endif
+
+        auto gv_file = temp_path + ".gv";
+        auto image_file = temp_path + ".png";
 
         auto dot_string = graph->dotString();
         std::ofstream gv_stream(gv_file);
@@ -58,9 +67,13 @@ namespace util {
         if (dot_process.returncode)
             throw std::runtime_error("`dot` process failed.");
 
-        // FIXME: must migrate this to windows
-        std::system(("bash -c 'gwenview " + image_file
-                     + " >/dev/null 2>&1 && rm " + image_file + " " + gv_file + " " + temp_name + "' &").c_str());
+#ifdef WIN32
+        std::system(("start " + image_file).c_str());
+#else
+        std::system(("bash -c 'xdg-open " + image_file
+                     + " >/dev/null 2>&1 && rm " + image_file + " " + gv_file + " " + temp_path + "' &").c_str());
+#endif
+
     }
 
 }
