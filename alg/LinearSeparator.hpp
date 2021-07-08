@@ -14,7 +14,7 @@
 namespace alg {
 
     template<bool bidirectional_graph>
-    class LinearSeparator : public Separator<bidirectional_graph>, public virtual Graph<bidirectional_graph> {
+class LinearSeparator : public Separator<bidirectional_graph>, public virtual model::Graph<bidirectional_graph> {
     protected:
 
         void preprocess(Oracle<bidirectional_graph> *oracle) override;
@@ -33,8 +33,9 @@ namespace alg {
 
     };
 
-}
+    extern template class LinearSeparator<true>;
+    extern template class LinearSeparator<false>;
 
-#include "LinearSeparator.cpp"
+}
 
 #endif //SEPARATOR_LINEARSEPARATOR_HPP

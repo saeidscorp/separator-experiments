@@ -22,8 +22,10 @@ namespace gen {
 
         model::Graph<bidirectional_graph> *generate();
     };
-}
 
-#include "LinearGenerator.cpp"
+    extern template class LinearGenerator<true>;
+    extern template class LinearGenerator<false>;
+
+}
 
 #endif //SEPARATOR_LINEARGENERATOR_HPP

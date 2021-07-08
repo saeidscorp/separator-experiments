@@ -35,8 +35,9 @@ namespace alg {
 
     };
 
-}
+    extern template class TreeSeparator<true>;
+    extern template class TreeSeparator<false>;
 
-#include "TreeSeparator.cpp"
+}
 
 #endif //SEPARATOR_TREESEPARATOR_HPP

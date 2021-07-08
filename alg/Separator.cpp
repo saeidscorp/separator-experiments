@@ -4,6 +4,10 @@
 
 #include "Separator.hpp"
 
+#include <sstream>
+
+using namespace alg;
+
 template<bool bidirectional_graph>
 Separator<bidirectional_graph>::Separator(Oracle<bidirectional_graph> *oracle)
         : Oracle<bidirectional_graph>(oracle->getGraph()), _avg_path_length(0), preprocessing_num_queries(0) {
@@ -131,4 +135,9 @@ std::string Separator<bidirectional_graph>::dotString() const {
 template<bool bidirectional_graph>
 double Separator<bidirectional_graph>::average_path_length() const {
     return _avg_path_length;
+}
+
+namespace alg {
+    template class Separator<true>;
+    template class Separator<false>;
 }

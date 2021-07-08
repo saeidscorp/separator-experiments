@@ -69,9 +69,9 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
 
     auto fill_nodes = util::recursive_lambda([&](auto &&fill_nodes,
                                                  model::Node *node,
-                                                 model::Node *parent) -> Node * {
+                                                 model::Node *parent) -> model::Node * {
 
-        std::vector<Node *> marked_children;
+        std::vector<model::Node *> marked_children;
 
         for (auto neighbor : node->getNeighs()) {
             if (neighbor == parent) continue;
@@ -124,14 +124,14 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
             auto original_parent = *graph->getNode(parent->getId());
             auto original_node = *graph->getNode(node->getId());
 
-            endpoints node_pair{original_parent, original_node};
+            model::endpoints node_pair{original_parent, original_node};
             auto result = oracle->query(node_pair);
             place_in_table(node_pair, result);
 
             decltype(result) result_rev;
 
             if constexpr (!bidirectional_graph) {
-                endpoints node_pair_rev{original_node, original_parent};
+                model::endpoints node_pair_rev{original_node, original_parent};
                 result_rev = oracle->query(node_pair_rev);
                 place_in_table(node_pair_rev, result);
             }
@@ -148,7 +148,7 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
     dfs(decomposition.root(), decomposition.root());
 
     this->preprocessing_num_queries = oracle->queries() - starting_count;
-    this->_avg_path_length = (ETA) sum_of_path_lengths / this->preprocessing_num_queries;
+    this->_avg_path_length = (model::ETA) sum_of_path_lengths / this->preprocessing_num_queries;
 
     std::cout << "selected nodes went from " << selected_count << " to " << new_size
               << " (increased by " << new_size - selected_count << ")" << std::endl;
@@ -185,4 +185,9 @@ model::path TreeSeparator<bidirectional_graph>::find_path(model::Node *from, mod
     std::copy(to_it, to_path.cend(), std::back_inserter(path));
 
     return path;
+}
+
+namespace alg {
+    template class TreeSeparator<true>;
+    template class TreeSeparator<false>;
 }

@@ -49,7 +49,7 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
                        return std::make_pair(p->getId(), false);
                    });
 
-    Node *prev = nullptr;
+    model::Node *prev = nullptr;
     for (auto i = 0ul; i < this->_seps_count; ++i) {
         auto current = this->selected_nodes[i];
         this->marked[current->getId()] = true;
@@ -64,14 +64,14 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
                 this->table.emplace(node_pair, result_eta);
             };
 
-            endpoints node_pair{prev, current};
+            model::endpoints node_pair{prev, current};
             auto result = oracle->query(node_pair);
             place_in_table(node_pair, result);
 
             decltype(result) result_rev;
 
             if constexpr (!bidirectional_graph) {
-                endpoints node_pair_rev{current, prev};
+                model::endpoints node_pair_rev{current, prev};
                 result_rev = oracle->query(node_pair_rev);
                 place_in_table(node_pair_rev, result);
             }
@@ -83,7 +83,7 @@ void LinearSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph
         prev = current;
     }
 
-    this->_avg_path_length = (ETA) sum_of_path_lengths / (this->_seps_count - 1);
+    this->_avg_path_length = (model::ETA) sum_of_path_lengths / (this->_seps_count - 1);
     this->preprocessing_num_queries = oracle->queries() - starting_count;
 }
 
@@ -101,4 +101,9 @@ model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, m
                   std::back_inserter(path));
 
     return path;
+}
+
+namespace alg {
+    template class LinearSeparator<true>;
+    template class LinearSeparator<false>;
 }

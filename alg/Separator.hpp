@@ -8,6 +8,8 @@
 #include "../model/model.hpp"
 #include "Oracle.hpp"
 
+#include "../util/stlutils.hpp"
+
 namespace alg {
 
     template<bool bidirectional_graph>
@@ -39,7 +41,7 @@ namespace alg {
             return lhs_min < rhs_min || (!(rhs_min < lhs_min) && lhs_max < rhs_max);
         };
 
-        typedef std::map<model::endpoints, ETA, decltype(table_comparator)> preprocessing_table;
+        typedef std::map<model::endpoints, model::ETA, decltype(table_comparator)> preprocessing_table;
 
         preprocessing_table table;
 
@@ -52,7 +54,7 @@ namespace alg {
             });
         }
 
-        [[nodiscard]] ETA eta_selectives(const model::path& selectives_path) const;
+        [[nodiscard]] model::ETA eta_selectives(const model::path& selectives_path) const;
 
         [[nodiscard]] virtual model::path find_path(model::Node *from, model::Node *to) const = 0;
 
@@ -77,8 +79,9 @@ namespace alg {
         [[nodiscard]] std::string dotString() const override;
     };
 
-}
+    extern template class Separator<true>;
+    extern template class Separator<false>;
 
-#include "Separator.cpp"
+}
 
 #endif //SEPARATOR_SEPARATOR_HPP

@@ -75,18 +75,19 @@ namespace model {
 
         [[nodiscard]] std::optional<model::Edge *> getEdge(int id) const;
 
-        std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
+        [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
 
         [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
 
         [[nodiscard]] virtual std::string dotString() const;
 
-        double similarity(model::Graph<bidirectional_graph> *graph) const;
+        [[nodiscard]] double similarity(model::Graph<bidirectional_graph> *graph) const;
 
     };
 
-}
+    extern template class Graph<true>;
+    extern template class Graph<false>;
 
-#include "Graph.cpp"
+}
 
 #endif //SEPARATOR_GRAPH_HPP

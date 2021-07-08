@@ -33,3 +33,8 @@ model::Graph<bidirectional_graph> *LinearGenerator<bidirectional_graph>::generat
 
     return graph;
 }
+
+namespace gen {
+    template class LinearGenerator<true>;
+    template class LinearGenerator<false>;
+}

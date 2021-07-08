@@ -4,6 +4,9 @@
 
 #include "CentroidDecomposition.hpp"
 
+#include "../util/funcutils.hpp"
+#include "../util/stlutils.hpp"
+
 using namespace alg;
 
 template<bool bidirectional_graph>
@@ -85,7 +88,7 @@ void CentroidDecomposition::build(const Graph<bidirectional_graph> *graph) {
                        return std::make_pair(p.first, createNode(p.first));
                    });
 
-    auto connect_parent = [&](Node *node) {
+    auto connect_parent = [&](model::Node *node) {
         auto parent = original_parents.at(node);
         if (node == parent)
             return;

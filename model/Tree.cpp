@@ -4,6 +4,10 @@
 
 #include "Tree.hpp"
 
+#include <sstream>
+
+#include "../util/funcutils.hpp"
+
 using namespace model;
 
 //template void Tree::build(const model::Graph<false> *);

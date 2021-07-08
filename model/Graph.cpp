@@ -304,7 +304,7 @@ void Graph<bidirectional_graph>::disconnect(Edge *edge) {
     remove_edge(edge);
 }
 
-//namespace model {
-//    template class Graph<true>;
-//    template class Graph<false>;
-//}
+namespace model {
+    template class Graph<true>;
+    template class Graph<false>;
+}

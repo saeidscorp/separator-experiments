@@ -48,8 +48,10 @@ namespace alg {
         [[nodiscard]] unsigned queries() const;
 
     };
-}
 
-#include "Oracle.cpp"
+    extern template class Oracle<true>;
+    extern template class Oracle<false>;
+
+}
 
 #endif //SEPARATOR_ORACLE_HPP

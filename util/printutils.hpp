@@ -15,7 +15,7 @@
 namespace util {
 
     template<typename _ = void>
-    void print_path(const Node *n1, const Node *n2, alg::query_result &result) {
+    void print_path(const model::Node *n1, const model::Node *n2, alg::query_result &result) {
         if (result)
             std::cout << "eta from " << n1->getId() << " to " << n2->getId() << " is: " << result.value().second
                       << std::endl;

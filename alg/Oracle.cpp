@@ -27,7 +27,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
     };
 
 
-    typedef std::map<model::Node *, ETA> score_map;
+    typedef std::map<model::Node *, model::ETA> score_map;
 
     score_map g_score;
     score_map f_score;
@@ -46,7 +46,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 
     auto reconstruct_path = [&came_from](model::Node *current) {
         model::path total_path{current};
-        ETA total_eta = 0;
+        model::ETA total_eta = 0;
 
         while (came_from.contains(current)) {
             auto prev_edge = came_from[current];
@@ -61,7 +61,7 @@ std::optional<model::path_length> Oracle<bidirectional_graph>::shortest_path(mod
 
     auto get_score = [](score_map *smap, model::Node *node) {
         auto it = smap->find(node);
-        return it != smap->end() ? it->second : std::numeric_limits<ETA>::max();
+        return it != smap->end() ? it->second : std::numeric_limits<model::ETA>::max();
     };
 
 
@@ -128,7 +128,7 @@ double Oracle<bidirectional_graph>::similarity(const Oracle<bidirectional_graph>
     unsigned query_count = 0;
 
     auto nodes = ref_graph->getNodes();
-    auto start_index = 0ul, end_index = nodes.size();
+    auto start_index = 0ull, end_index = nodes.size();
 
     for (auto i = start_index; i < end_index; ++i)
         for (unsigned j = start_index; j < end_index; ++j) {
@@ -205,7 +205,7 @@ double Oracle<bidirectional_graph>::similarity_random(const Oracle<bidirectional
     return error_sum / query_count;
 }
 
-//namespace alg {
-//    template class Oracle<true>;
-//    template class Oracle<false>;
-//}
+namespace alg {
+    template class Oracle<true>;
+    template class Oracle<false>;
+}
