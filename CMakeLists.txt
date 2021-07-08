@@ -38,6 +38,7 @@ target_link_libraries(separator effolkronium_random tbb Threads::Threads subproc
 
 target_precompile_headers(separator PRIVATE <string> <vector> <map> <functional> <concepts> <iostream> <execution>)
 
+set_target_properties(separator PROPERTIES UNITY_BUILD ON)
 
 # colorful ninja
 
