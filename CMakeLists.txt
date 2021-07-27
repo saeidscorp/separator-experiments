@@ -34,6 +34,7 @@ find_package(TBB)
 find_package(Threads)
 
 add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp model/model.hpp model/Edge.cpp model/model.cpp model/Graph.hpp model/Graph.cpp gen/LinearGenerator.hpp gen/LinearGenerator.cpp alg/LinearSeparator.hpp alg/LinearSeparator.cpp alg/Oracle.hpp alg/Oracle.cpp util/stlutils.hpp model/modeltypes.hpp util/printutils.hpp util/parallelutils.hpp gen/TreeGenerator.hpp gen/TreeGenerator.cpp util/randutils.hpp util/funcutils.hpp alg/CentroidDecomposition.hpp alg/CentroidDecomposition.cpp model/Tree.hpp model/Tree.cpp util/progutils.hpp alg/TreeSeparator.hpp alg/TreeSeparator.cpp alg/Separator.hpp alg/Separator.cpp)
+
 target_link_libraries(separator effolkronium_random tbb Threads::Threads subprocess)
 
 target_precompile_headers(separator PRIVATE <string> <vector> <map> <functional> <concepts> <iostream> <execution>)

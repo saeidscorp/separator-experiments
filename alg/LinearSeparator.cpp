@@ -93,12 +93,25 @@ model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, m
     model::path path;
 
     auto sel_from = this->closest_separator(from), sel_to = this->closest_separator(to);
+    auto sel2_from = *this->template closest_separator<2>(from), sel2_to = *this->template closest_separator<2>(to);
 
     if (sel_from < sel_to)
         std::copy(sel_from, std::next(sel_to), std::back_inserter(path));
     else
         std::copy(std::reverse_iterator(std::next(sel_from)), std::reverse_iterator(sel_to),
                   std::back_inserter(path));
+
+    auto alt_from = false, alt_to = false;
+    for (auto it = path.begin(); it != path.end(); ++it) {
+        if (it == path.begin() || std::next(it) == path.end()) continue;
+        if ((*it)->getId() == sel2_from->getId()) alt_from = true;
+        if ((*it)->getId() == sel2_to->getId()) alt_to = true;
+    }
+
+    if (alt_from)
+        path.pop_front();
+    if (alt_to)
+        path.pop_back();
 
     return path;
 }

@@ -43,7 +43,7 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     auto from = ep.first, to = ep.second;
     auto path = find_path(from, to);
 
-    // TODO: develop path deduplication for reducing error
+    // IN PROGRESS TODO: develop path deduplication for reducing error
 
     auto sel_from = path.front(), sel_to = path.back();
 
@@ -51,6 +51,10 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
 
     // heuristic 1:
     auto sel2_from = *this->closest_separator<2>(from), sel2_to = *this->closest_separator<2>(to);
+
+    // swap for deduplication
+    if (sel_from == sel2_from) sel2_from = *this->template closest_separator(from);
+    if (sel_to == sel2_to) sel2_to = *this->template closest_separator(to);
 
     // fixme: this breaks with unidirectional edges.
     auto eta_from_segment = eta_selectives({sel2_from, sel_from});
@@ -69,7 +73,6 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     return model::path_length(path, total_eta);
 }
 
-
 template<bool bidirectional_graph>
 model::ETA
 Separator<bidirectional_graph>::eta_selectives(const model::path& selectives_path) const {
@@ -80,7 +83,7 @@ Separator<bidirectional_graph>::eta_selectives(const model::path& selectives_pat
                                    const auto &[left, right] = pair;
                                    auto lookup = this->table.find({left, right});
                                    if (sum < 0 || lookup == this->table.end())
-                                       return -1.;
+                                       return 0.;
                                    return sum + (*lookup).second;
                                });
     };

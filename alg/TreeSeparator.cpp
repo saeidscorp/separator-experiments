@@ -31,6 +31,8 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
 
     CentroidDecomposition cd{graph};
 
+    util::visualize_graph(&cd);
+
     auto bfs = [&](model::Node *root, int max_size) {
 
         if (root == nullptr)
