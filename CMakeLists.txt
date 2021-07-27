@@ -9,18 +9,6 @@ project(separator)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_options(-Wall -Wextra)
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        add_compile_options(-flto)
-        add_link_options(-flto)
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        add_compile_options(-flto=thin)
-        add_link_options(-fuse-ld=lld)
-    endif ()
-endif ()
-
 #if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 #    add_compile_options(--coverage)
 #    add_link_options(--coverage)
@@ -40,6 +28,18 @@ add_executable(separator main.cpp model/Node.hpp model/Edge.hpp model/Node.cpp m
 target_link_libraries(separator effolkronium_random tbb Threads::Threads subprocess magic_enum)
 
 target_precompile_headers(separator PRIVATE <string> <vector> <map> <functional> <concepts> <iostream> <execution>)
+
+target_compile_options(separator PRIVATE -Wall -Wextra)
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        target_compile_options(separator PRIVATE -flto)
+        target_link_options(separator PRIVATE -flto)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        target_compile_options(separator PRIVATE -flto=thin)
+        target_link_options(separator PRIVATE -fuse-ld=lld)
+    endif ()
+endif ()
 
 set_target_properties(separator PROPERTIES UNITY_BUILD ON)
 

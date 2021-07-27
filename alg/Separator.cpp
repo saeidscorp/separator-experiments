@@ -47,7 +47,7 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
 
     auto sel_from = path.front(), sel_to = path.back();
 
-    auto sel_eta = eta_selectives({sel_from, sel_to});
+    auto sel_eta = eta_selectives(path);
 
     // heuristic 1:
     auto sel2_from = *this->closest_separator<2>(from), sel2_to = *this->closest_separator<2>(to);

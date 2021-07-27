@@ -101,16 +101,27 @@ model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, m
         std::copy(std::reverse_iterator(std::next(sel_from)), std::reverse_iterator(sel_to),
                   std::back_inserter(path));
 
+    auto do_alt_from = true, do_alt_to = true;
     auto alt_from = false, alt_to = false;
     for (auto it = path.begin(); it != path.end(); ++it) {
-        if (it == path.begin() || std::next(it) == path.end()) continue;
-        if ((*it)->getId() == sel2_from->getId()) alt_from = true;
+        if (it == path.begin()) {
+            if (*it == from)
+                do_alt_from = false;
+            continue;
+        }
+        if (std::next(it) == path.end()) {
+            if (*it == to)
+                do_alt_to = false;
+            continue;
+        }
+
+        if (do_alt_from && (*it)->getId() == sel2_from->getId()) alt_from = true;
         if ((*it)->getId() == sel2_to->getId()) alt_to = true;
     }
 
     if (alt_from)
         path.pop_front();
-    if (alt_to)
+    if (do_alt_to && alt_to)
         path.pop_back();
 
     return path;
