@@ -146,8 +146,8 @@ std::string Graph<bidirectional_graph>::dotString() const {
     for (auto iter = _edge_map->begin(); iter != _edge_map->end(); iter++) {
         auto edge = iter->second;
         ss << "    ";
-        ss << edge->getFrom()->getId() << edge_specifier << edge->getTo()->getId();
-        ss << " [label=\"" << edge->getEta() << "\"];" << std::endl;
+        ss << edge->getFrom()->getId() << edge_specifier << edge->getTo()->getId() << std::endl;
+//        ss << " [label=\"" << edge->getEta() << "\"];" << std::endl;
     }
 
     ss << "}" << std::endl;

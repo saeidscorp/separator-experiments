@@ -24,7 +24,7 @@ model::Graph<true> *TreeGenerator::generate() {
         if (remaining == 0)
             return 0;
 
-        auto new_node = graph->createNode(current, 0, "node_" + std::to_string(current + 1));
+        auto new_node = graph->createNode(current, 0, std::to_string(current + 1));
         remaining--;
 
         if (parent != nullptr) {

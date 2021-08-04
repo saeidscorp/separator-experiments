@@ -113,6 +113,7 @@ std::string Separator<bidirectional_graph>::dotString() const {
 
     std::stringstream ss;
     ss << graph_specifier << " {" << std::endl;
+    // ss << "    " << "rankdir=\"LR\";" << std::endl;
 
     for (auto &node : this->graph->getNodes()) {
         std::string *name = node->getName();

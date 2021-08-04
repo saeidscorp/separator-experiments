@@ -40,7 +40,7 @@ int main(int argc, const char **argv) {
         auto linear_gen = new gen::LinearGenerator<true>(n);
         auto rand_g     = linear_gen->generate();
 
-        util::visualize_graph(rand_g);
+//        util::visualize_graph(rand_g);
 
         alg::Oracle oracle(rand_g);
         std::cout << "# Linear Separator: " << n << std::endl;
