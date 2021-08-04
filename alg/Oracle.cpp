@@ -124,7 +124,7 @@ double Oracle<bidirectional_graph>::similarity(const Oracle<bidirectional_graph>
     auto ref_graph = this->getGraph();
     auto other_graph = other_oracle->getGraph();
 
-    double sse = 0;
+    double error = 0;
     unsigned query_count = 0;
 
     auto nodes = ref_graph->getNodes();
@@ -146,11 +146,20 @@ double Oracle<bidirectional_graph>::similarity(const Oracle<bidirectional_graph>
             if (!oracle_eta)
                 std::cerr << "oracle query unavailable" << std::endl;
 
-            sse += std::pow(oracle_eta.value().second - sep_eta.value().second, 2);
+            auto [x, y] = std::tie(oracle_eta.value().second, sep_eta.value().second);
+
+            decltype(oracle_eta.value().second) ratio;
+
+            if (y != 0)
+                ratio = x / y;
+            else
+                ratio = x;
+
+            error += std::abs(ratio);
             query_count++;
         }
 
-    return sse / query_count;
+    return error / query_count;
 }
 
 template<bool bidirectional_graph>
@@ -174,7 +183,7 @@ double Oracle<bidirectional_graph>::similarity_random(const Oracle<bidirectional
     auto ref_graph = this->getGraph();
     auto other_graph = other_oracle->getGraph();
 
-    double error_sum = 0;
+    double error = 0;
 
     auto nodes = ref_graph->getNodes();
     const auto query_count = nodes.size();
@@ -199,10 +208,19 @@ double Oracle<bidirectional_graph>::similarity_random(const Oracle<bidirectional
         if (!oracle_eta)
             std::cerr << "oracle query unavailable" << std::endl;
 
-        error_sum += std::abs(oracle_eta.value().second - sep_eta.value().second);
+        auto [x, y] = std::tie(oracle_eta.value().second, sep_eta.value().second);
+
+        decltype(oracle_eta.value().second) ratio;
+
+        if (y != 0)
+            ratio = x / y;
+        else
+            ratio = x;
+
+        error += std::abs(ratio);
     }
 
-    return error_sum / query_count;
+    return error / query_count;
 }
 
 namespace alg {

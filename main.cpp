@@ -46,7 +46,7 @@ int main(int argc, const char **argv) {
         std::cout << "# Linear Separator: " << n << std::endl;
         alg::LinearSeparator linear_sep{rand_g};
 
-        util::visualize_graph(&linear_sep);
+//        util::visualize_graph(&linear_sep);
 
         std::cout << "-> Linear separator used " << linear_sep.preprocessing_queries() << " preprocessing queries from the oracle"
                   << std::endl;
