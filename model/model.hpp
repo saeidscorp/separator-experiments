@@ -8,8 +8,12 @@
 #include "Edge.hpp"
 #include "Node.hpp"
 #include "Graph.hpp"
+#include "Tree.hpp"
 
 #include <list>
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
 
 namespace model {
 
@@ -24,6 +28,9 @@ namespace model {
     std::ostream &operator<< (std::ostream &o, Node const &node);
     std::ostream &operator<< (std::ostream &o, Node const *node);
     std::ostream &operator<< (std::ostream &o, std::string const *string);
+
+    template<bool bidirectional_graph = true>
+    Graph<bidirectional_graph> *random_weights(Graph<bidirectional_graph> *g);
 }
 
 #endif //SEPARATOR_MODEL_HPP

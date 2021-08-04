@@ -64,7 +64,7 @@ namespace model {
 
         void setTo(Node *to);
 
-        [[nodiscard]] Node *getOther(Node *thisOne);
+        [[nodiscard]] Node *getOther(const Node *thisOne) const;
     };
 
 }

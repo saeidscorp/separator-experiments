@@ -3,77 +3,123 @@
 #include <chrono>
 
 #include "model/model.hpp"
+#include "gen/TreeGenerator.hpp"
+#include "alg/TreeSeparator.hpp"
 #include "gen/LinearGenerator.hpp"
-#include "alg/LinearSeparator.h"
+#include "alg/LinearSeparator.hpp"
 #include "alg/Oracle.hpp"
-#include "util/stlutils.hpp"
+
 #include "util/printutils.hpp"
+#include "util/progutils.hpp"
 
-template<bool bidirectional_graph = true>
-model::Graph<bidirectional_graph> *random_weights(model::Graph<bidirectional_graph> *g) {
-    auto g_copy = new model::Graph<bidirectional_graph>(*g);
-    auto nodes = g->getNodes();
-    auto start_index = 0ul, end_index = nodes.size() - 1;
-    for (auto i = start_index; i < end_index; ++i)
-        for (auto j = start_index; j < end_index; ++j) {
-            auto from = nodes[i], to = nodes[j];
-            auto eta = Random::get(0., 1.);
-            auto our_edge = g_copy->getEdgeBetween(from->getId(), to->getId());
-            if (our_edge)
-                our_edge.value()->setEta(eta);
-        }
-    return g_copy;
-}
-
-std::optional<std::string> get_cmd_option(const char ** begin, const char ** end, const std::string & option)
-{
-    const char ** itr = std::find(begin, end, option);
-    if (itr != end && ++itr != end)
-        return *itr;
-    return {};
-}
-
-std::optional<std::string> get_cmd_option(const int argc, const char **argv, const std::string & option)
-{
-    return get_cmd_option(argv, argv + argc, option);
-}
+#include "magic_enum.hpp"
 
 int main(int argc, const char **argv) {
 
-    int n = 10;
+    enum OperationMode {
+        Linear, Tree, Planar
+    } operation_mode = Linear;
 
-    auto graph_size = get_cmd_option(argc, argv, "-n");
+    int n = 16;
+
+    auto operation_mode_str = util::get_cmd_option(argc, argv, "-m");
+    if (operation_mode_str) {
+        auto parsed_mode = magic_enum::enum_cast<OperationMode>(operation_mode_str.value());
+        if (parsed_mode.has_value())
+            operation_mode = parsed_mode.value();
+        else
+            throw std::runtime_error("Invalid operation mode specified: " + operation_mode_str.value());
+    }
+
+    auto graph_size = util::get_cmd_option(argc, argv, "-n");
     if (graph_size)
         n = std::stoi(graph_size.value());
 
-    auto linear_gen = new gen::LinearGenerator<true>(n);
-    auto rand_g = linear_gen->generate();
-    auto oracle = new alg::Oracle(rand_g);
-    std::cout << "# Linear Separator:" << std::endl;
-    auto linear_sep = new alg::LinearSeparator(rand_g);
-    std::cout << "Linear separator used " << linear_sep->preprocessing_queries() << " queries from the oracle"
-              << std::endl;
-    std::cout << std::endl;
+    if (operation_mode == Linear) {
 
-    auto start = std::chrono::high_resolution_clock::now();
-    auto similarity = linear_sep->similarity();
-    std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+        auto linear_gen = new gen::LinearGenerator<true>(n);
+        auto rand_g     = linear_gen->generate();
 
-    std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+//        util::visualize_graph(rand_g);
 
-    start = std::chrono::high_resolution_clock::now();
-    auto random_from_g = random_weights(rand_g);
-    elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
+        alg::Oracle oracle(rand_g);
+        std::cout << "# Linear Separator: " << n << std::endl;
+        alg::LinearSeparator linear_sep{rand_g};
 
-    start = std::chrono::high_resolution_clock::now();
-    similarity = oracle->similarity(random_from_g);
-    elapsed = std::chrono::high_resolution_clock::now() - start;
-    std::cout << ":: computing similarity took " << elapsed.count() << " seconds" << std::endl;
+        util::visualize_graph(&linear_sep);
 
-    std::cout << "MSE of reference graph but with random weights to the reference itself is: "
-              << similarity << std::endl;
+        std::cout << "-> Linear separator used " << linear_sep.preprocessing_queries() << " preprocessing queries from the oracle"
+                  << std::endl;
+        std::cout << std::endl;
+
+        auto                          start      = std::chrono::high_resolution_clock::now();
+        auto                          similarity = linear_sep.similarity();
+        std::chrono::duration<double> elapsed    = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+
+        std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+
+        start = std::chrono::high_resolution_clock::now();
+        auto random_from_g = random_weights(rand_g);
+        elapsed = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
+
+        start      = std::chrono::high_resolution_clock::now();
+        similarity = oracle.similarity(random_from_g);
+        elapsed    = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+
+        std::cout << "MSE of reference graph but with random weights to the reference itself is: "
+                  << similarity << std::endl;
+    }
+
+    else if (operation_mode == Tree) {
+
+        std::cout << "# Tree Separator: " << n << std::endl;
+
+        gen::TreeGenerator tree_gen{n, 2, 4};
+        auto tree = tree_gen.generate();
+
+        util::visualize_graph(tree);
+
+        auto oracle = new alg::Oracle(tree);
+
+        alg::TreeSeparator tree_sep{tree};
+
+        util::visualize_graph<false>(&tree_sep);
+
+        std::cout << "-> Tree Separator used " << tree_sep.preprocessing_queries() << " preprocessing queries from the oracle"
+                  << std::endl;
+        std::cout << std::endl;
+
+        auto                          start      = std::chrono::high_resolution_clock::now();
+        auto                          similarity = tree_sep.similarity();
+        std::chrono::duration<double> elapsed    = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+        // std::cout << "random similarity: " << tree_sep.similarity_random() << std::endl;
+
+        std::cout << "average path length of queries: " << tree_sep.average_path_length() << std::endl;
+
+        std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+        std::cout << std::endl;
+
+        start = std::chrono::high_resolution_clock::now();
+        auto random_from_tree = random_weights(tree);
+        elapsed = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
+
+        start      = std::chrono::high_resolution_clock::now();
+        similarity = oracle->similarity(random_from_tree);
+        elapsed    = std::chrono::high_resolution_clock::now() - start;
+        std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
+
+        std::cout << "MSE of reference graph but with random weights to the reference itself is: "
+                  << similarity << std::endl;
+    }
+
+    else if (operation_mode == Planar) {
+        std::cerr << "Not implemented yet." << std::endl;
+    }
 
     return 0;
 }

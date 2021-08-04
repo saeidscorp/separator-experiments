@@ -29,7 +29,11 @@ namespace model {
 
         void addNeigh(Node *other);
 
+        void remove_neigh(Node *other);
+
         void addEdge(Edge *edge);
+
+        void remove_edge(Edge *edge);
 
     public:
 
@@ -64,6 +68,10 @@ namespace model {
         Edge *connect(Node *other);
 
         Node *connect(Edge *existingEdge);
+
+        void disconnect(Node *other);
+
+        void disconnect(Edge *edge);
 
         std::optional<Edge *> getEdgeOf(Node *node);
 

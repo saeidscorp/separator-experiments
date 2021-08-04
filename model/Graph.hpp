@@ -17,7 +17,7 @@ namespace model {
 
     template<bool bidirectional_graph = true>
     class Graph {
-    private:
+    protected:
         std::map<int, Node *> *_node_map;
         std::map<int, Edge *> *_edge_map;
 
@@ -30,8 +30,9 @@ namespace model {
 
         void add_node(Node *node);
 
-        template<bool bidirectional = bidirectional_graph>
-        void add_edge(Edge *edge);
+        virtual void add_edge(Edge *edge);
+
+        virtual void remove_edge(Edge *edge);
 
     public:
         Graph();
@@ -40,24 +41,27 @@ namespace model {
 
         Node *createNode();
 
-        Node *createNode(Node *node);
+        Node *createNode(const Node *node);
 
         Node *createNode(double lon, double lat, std::string name = std::string(""));
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to, Edge *edge);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id);
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(Node *from, Node *to, double max_speed, ETA eta = ETA{}, std::string name = std::string());
 
-        template<bool bidirectional = bidirectional_graph>
         Edge *connect(int from_id, int to_id, double max_speed, ETA eta = ETA{}, std::string name = std::string());
+
+        void disconnect(Node *from, Node *to);
+
+        void disconnect(int from_id, int to_id);
+
+        void disconnect(Edge *edge);
+
+        [[nodiscard]] std::size_t size() const;
 
         [[nodiscard]] std::vector<model::Node *> getNodes() const;
 
@@ -71,18 +75,19 @@ namespace model {
 
         [[nodiscard]] std::optional<model::Edge *> getEdge(int id) const;
 
-        std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
+        [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(model::Node *from, model::Node *to) const;
 
         [[nodiscard]] std::optional<model::Edge *> getEdgeBetween(int id1, int id2) const;
 
-        [[nodiscard]] std::string dotString() const;
+        [[nodiscard]] virtual std::string dotString() const;
 
-        double similarity(model::Graph<bidirectional_graph> *graph) const;
+        [[nodiscard]] double similarity(model::Graph<bidirectional_graph> *graph) const;
 
     };
 
-}
+    extern template class Graph<true>;
+    extern template class Graph<false>;
 
-#include "Graph.cpp"
+}
 
 #endif //SEPARATOR_GRAPH_HPP

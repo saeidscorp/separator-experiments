@@ -4,3 +4,12 @@
 [submodule "lib/findtbb"]
 	path = lib/findtbb
 	url = https://github.com/justusc/FindTBB.git
+[submodule "lib/subprocess"]
+	path = lib/subprocess
+	url = https://github.com/benman64/subprocess.git
+[submodule "lib/lib/magic_enum"]
+	path = lib/lib/magic_enum
+	url = https://github.com/Neargye/magic_enum.git
+[submodule "lib/magic_enum"]
+	path = lib/magic_enum
+	url = https://github.com/Neargye/magic_enum.git

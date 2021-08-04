@@ -3,6 +3,8 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/findtbb" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/magic_enum" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/lib/random" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/subprocess" vcs="Git" />
   </component>
 </project>
