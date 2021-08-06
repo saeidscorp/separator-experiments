@@ -57,8 +57,8 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     if (sel_to == sel2_to) sel2_to = *this->template closest_separator(to);
 
     // fixme: this breaks with unidirectional edges.
-    auto eta_from_segment = eta_selectives({sel2_from, sel_from});
-    auto eta_to_segment = eta_selectives({sel2_to, sel_to});
+    auto eta_from_segment = eta_selectives(find_path(sel2_from, sel_from));
+    auto eta_to_segment = eta_selectives(find_path(sel2_to, sel_to));
     auto ratio_from = model::Node::distance(from, sel_from)
                       / std::max(model::Node::distance(sel2_from, sel_from), 1.);
     auto ratio_to = model::Node::distance(to, sel_to)
