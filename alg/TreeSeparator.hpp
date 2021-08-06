@@ -23,6 +23,8 @@ namespace alg {
 
         [[nodiscard]] model::Node * parent_in_decomposition(model::Node *node) const;
 
+        [[nodiscard]] selected_iterator closest_separator(model::Node *node, int nth) const override;
+
     public:
 
         explicit TreeSeparator(const model::Graph<bidirectional_graph> *graph);

@@ -178,24 +178,7 @@ model::path TreeSeparator<bidirectional_graph>::find_path(model::Node *from, mod
         return root_path;
     };
 
-    auto first_selected = util::recursive_lambda([&](auto &&first_selected,
-            model::Node *node,
-            model::Node *parent) -> model::Node * {
-
-        if (this->marked.at(node->getId()))
-            return node;
-
-        for (auto neigh : node->getNeighs()) {
-            if (neigh == parent) continue;
-            auto first = first_selected(neigh, node);
-            if (first)
-                return first;
-        }
-
-        return nullptr;
-    });
-
-    auto sel_from  = first_selected(from, from), sel_to = first_selected(to, to);
+    auto sel_from  = *closest_separator(from, 1), sel_to = *closest_separator(to, 1);
     auto from_path = path_to_root_in_decomp(sel_from), to_path = path_to_root_in_decomp(sel_to);
 
     auto from_it = from_path.cbegin(), to_it = to_path.cbegin();
@@ -213,6 +196,43 @@ template <bool bidirectional_graph>
 model::Node * TreeSeparator<bidirectional_graph>::parent_in_decomposition(model::Node * node) const {
     auto node_id = node->getId();
     return *decomposition[*decomposition.getNode(node_id)];
+}
+
+template <bool bidirectional_graph>
+selected_iterator TreeSeparator<bidirectional_graph>::closest_separator(model::Node * node, int nth) const {
+
+    auto first_selected = util::recursive_lambda([&](auto &&first_selected,
+            model::Node *node,
+            model::Node *parent,
+            bool skip_first = false) -> std::optional<std::pair<model::Node *, model::Node *>> {
+
+        if (!skip_first && this->marked.at(node->getId()))
+            return {{node, parent}};
+
+        for (auto neigh : node->getNeighs()) {
+            if (neigh == parent) continue;
+            if (skip_first && this->marked.at(neigh->getId()))
+                return {{neigh, node}};
+            auto first = first_selected(neigh, node, skip_first);
+            if (first)
+                return first;
+        }
+
+        return {};
+    });
+
+    auto last_pair = first_selected(node, node);
+    for (int i = 0; i < nth - 1; ++i) {
+        auto [node, parent] = last_pair.value();
+        auto current_pair = first_selected(node, parent, true);
+        if (!current_pair) {
+            std::cerr << "Nth requested separator not found!";
+            break;
+        }
+        last_pair = current_pair;
+    }
+
+    return std::find(this->selected_nodes.cbegin(), this->selected_nodes.cend(), last_pair.value().first);
 }
 
 namespace alg {

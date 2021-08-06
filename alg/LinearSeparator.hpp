@@ -21,6 +21,8 @@ class LinearSeparator : public Separator<bidirectional_graph>, public virtual mo
 
         [[nodiscard]] model::path find_path(model::Node *from, model::Node *to) const override;
 
+        [[nodiscard]] selected_iterator closest_separator(model::Node *node, int nth) const override;
+
     public:
 
         explicit LinearSeparator(const model::Graph<bidirectional_graph> *graph);

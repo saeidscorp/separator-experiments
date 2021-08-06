@@ -50,11 +50,11 @@ query_result Separator<bidirectional_graph>::do_query(model::endpoints ep) const
     auto sel_eta = eta_selectives(path);
 
     // heuristic 1:
-    auto sel2_from = *this->closest_separator<2>(from), sel2_to = *this->closest_separator<2>(to);
+    auto sel2_from = *this->closest_separator(from, 2), sel2_to = *this->closest_separator(to, 2);
 
     // swap for deduplication
-    if (sel_from == sel2_from) sel2_from = *this->template closest_separator(from);
-    if (sel_to == sel2_to) sel2_to = *this->template closest_separator(to);
+    if (sel_from == sel2_from) sel2_from = *this->closest_separator(from, 1);
+    if (sel_to == sel2_to) sel2_to = *this->closest_separator(to, 1);
 
     // fixme: this breaks with unidirectional edges.
     auto eta_from_segment = eta_selectives(find_path(sel2_from, sel_from));

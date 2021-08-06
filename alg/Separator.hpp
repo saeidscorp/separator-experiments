@@ -12,6 +12,8 @@
 
 namespace alg {
 
+    typedef std::vector<model::Node *>::const_iterator selected_iterator;
+
     template<bool bidirectional_graph>
     class Separator : public Oracle<bidirectional_graph>, public virtual model::Graph<bidirectional_graph> {
     protected:
@@ -47,12 +49,7 @@ namespace alg {
 
         virtual void preprocess(Oracle<bidirectional_graph> *oracle) = 0;
 
-        template<int nth = 1>
-        decltype(auto) closest_separator(model::Node *node) const {
-            return util::min_by<nth>(selected_nodes, [node](const model::Node *n) {
-                return model::Node::distance(node, n);
-            });
-        }
+        [[nodiscard]] virtual selected_iterator closest_separator(model::Node *node, int nth) const = 0;
 
         [[nodiscard]] model::ETA eta_selectives(const model::path& selectives_path) const;
 

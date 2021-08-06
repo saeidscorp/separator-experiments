@@ -92,8 +92,8 @@ model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, m
 
     model::path path;
 
-    auto sel_from = this->closest_separator(from), sel_to = this->closest_separator(to);
-    auto sel2_from = *this->template closest_separator<2>(from), sel2_to = *this->template closest_separator<2>(to);
+    auto sel_from = this->closest_separator(from, 1), sel_to = this->closest_separator(to, 1);
+    auto sel2_from = *this->closest_separator(from, 2), sel2_to = *this->closest_separator(to, 2);
 
     if (sel_from < sel_to)
         std::copy(sel_from, std::next(sel_to), std::back_inserter(path));
@@ -125,6 +125,23 @@ model::path LinearSeparator<bidirectional_graph>::find_path(model::Node *from, m
         path.pop_back();
 
     return path;
+}
+
+template <bool bidirectional_graph>
+selected_iterator LinearSeparator<bidirectional_graph>::closest_separator(model::Node * node, int nth) const {
+
+    if (nth == 1)
+        return util::min_by<1>(this->selected_nodes, [node](const model::Node * n) {
+            return model::Node::distance(node, n);
+        });
+    else if (nth == 2)
+        return util::min_by<2>(this->selected_nodes, [node](const model::Node * n) {
+            return model::Node::distance(node, n);
+        });
+    else
+        return util::min_by<3>(this->selected_nodes, [node](const model::Node * n) {
+            return model::Node::distance(node, n);
+        });
 }
 
 namespace alg {
