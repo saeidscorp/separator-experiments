@@ -43,6 +43,8 @@ namespace alg {
 
         [[nodiscard]] double similarity_random(const Oracle<bidirectional_graph> *other_oracle) const;
 
+        [[nodiscard]] double similarity_random(const model::Graph<bidirectional_graph> *other_graph) const;
+
         [[nodiscard]] model::Graph<bidirectional_graph> *getGraph() const;
 
         [[nodiscard]] unsigned queries() const;

@@ -223,6 +223,12 @@ double Oracle<bidirectional_graph>::similarity_random(const Oracle<bidirectional
     return error / query_count;
 }
 
+template <bool bidirectional_graph>
+double Oracle<bidirectional_graph>::similarity_random(const model::Graph<bidirectional_graph> * other_graph) const {
+    Oracle<bidirectional_graph> oracle(other_graph);
+    return similarity_random(&oracle);
+}
+
 namespace alg {
     template class Oracle<true>;
     template class Oracle<false>;

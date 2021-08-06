@@ -31,7 +31,7 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
 
     CentroidDecomposition cd{graph};
 
-    util::visualize_graph(&cd);
+//    util::visualize_graph(&cd);
 
     auto bfs = [&](model::Node *root, int max_size) {
 
@@ -135,7 +135,7 @@ void TreeSeparator<bidirectional_graph>::preprocess(Oracle<bidirectional_graph> 
             if constexpr (!bidirectional_graph) {
                 model::endpoints node_pair_rev{original_node, original_parent};
                 result_rev = oracle->query(node_pair_rev);
-                place_in_table(node_pair_rev, result);
+                place_in_table(node_pair_rev, result_rev);
             }
 
             if (!(result || result_rev))
@@ -160,33 +160,59 @@ template<bool bidirectional_graph>
 model::path TreeSeparator<bidirectional_graph>::find_path(model::Node *from, model::Node *to) const {
     model::path path;
 
-    auto path_to_root = [&](model::Node *node) {
+    auto path_to_root_in_decomp = [&](model::Node *node) {
         model::path root_path;
 
-        auto parent = *decomposition[node];
+        auto parent = parent_in_decomposition(node);
 
-        while (parent != node) {
-            root_path.push_back(node);
+        do {
+            root_path.push_back(*this->graph->getNode(node->getId()));
             node = parent;
             parent = *decomposition[node];
-        }
+        } while (parent);
+
+        if (node)
+            root_path.push_back(*this->graph->getNode(node->getId()));
 
         root_path.reverse();
         return root_path;
     };
 
-    auto sel_from = this->closest_separator(from), sel_to = this->closest_separator(to);
-    auto from_path = path_to_root(*sel_from), to_path = path_to_root(*sel_to);
+    auto first_selected = util::recursive_lambda([&](auto &&first_selected,
+            model::Node *node,
+            model::Node *parent) -> model::Node * {
+
+        if (this->marked.at(node->getId()))
+            return node;
+
+        for (auto neigh : node->getNeighs()) {
+            if (neigh == parent) continue;
+            auto first = first_selected(neigh, node);
+            if (first)
+                return first;
+        }
+
+        return nullptr;
+    });
+
+    auto sel_from  = first_selected(from, from), sel_to = first_selected(to, to);
+    auto from_path = path_to_root_in_decomp(sel_from), to_path = path_to_root_in_decomp(sel_to);
 
     auto from_it = from_path.cbegin(), to_it = to_path.cbegin();
     for (; from_it != from_path.cend() && to_it != to_path.cend() &&
-           *from_it != *to_it;
+           *from_it == *to_it;
            ++from_it, ++to_it);
 
     std::copy(from_path.crbegin(), std::reverse_iterator(std::prev(from_it)), std::back_inserter(path));
     std::copy(to_it, to_path.cend(), std::back_inserter(path));
 
     return path;
+}
+
+template <bool bidirectional_graph>
+model::Node * TreeSeparator<bidirectional_graph>::parent_in_decomposition(model::Node * node) const {
+    auto node_id = node->getId();
+    return *decomposition[*decomposition.getNode(node_id)];
 }
 
 namespace alg {

@@ -21,6 +21,8 @@ namespace alg {
 
         [[nodiscard]] model::path find_path(model::Node *from, model::Node *to) const override;
 
+        [[nodiscard]] model::Node * parent_in_decomposition(model::Node *node) const;
+
     public:
 
         explicit TreeSeparator(const model::Graph<bidirectional_graph> *graph);

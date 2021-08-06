@@ -53,24 +53,24 @@ int main(int argc, const char **argv) {
         std::cout << std::endl;
 
         auto                          start      = std::chrono::high_resolution_clock::now();
-        auto                          similarity = linear_sep.similarity();
+        auto                          similarity = linear_sep.similarity_random();
         std::chrono::duration<double> elapsed    = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
 
-        std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+        std::cout << "Average error ratio of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
 
-        start = std::chrono::high_resolution_clock::now();
+        /*start = std::chrono::high_resolution_clock::now();
         auto random_from_g = random_weights(rand_g);
         elapsed = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
 
         start      = std::chrono::high_resolution_clock::now();
-        similarity = oracle.similarity(random_from_g);
+        similarity = oracle.similarity_random(random_from_g);
         elapsed    = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
 
-        std::cout << "MSE of reference graph but with random weights to the reference itself is: "
-                  << similarity << std::endl;
+        std::cout << "Average error ratio of reference graph but with random weights to the reference itself is: "
+                  << similarity << std::endl;*/
     }
 
     else if (operation_mode == Tree) {
@@ -80,7 +80,7 @@ int main(int argc, const char **argv) {
         gen::TreeGenerator tree_gen{n, 2, 4};
         auto tree = tree_gen.generate();
 
-        util::visualize_graph(tree);
+//        util::visualize_graph(tree);
 
         auto oracle = new alg::Oracle(tree);
 
@@ -93,32 +93,33 @@ int main(int argc, const char **argv) {
         std::cout << std::endl;
 
         auto                          start      = std::chrono::high_resolution_clock::now();
-        auto                          similarity = tree_sep.similarity();
+        auto                          similarity = tree_sep.similarity_random();
         std::chrono::duration<double> elapsed    = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
         // std::cout << "random similarity: " << tree_sep.similarity_random() << std::endl;
 
         std::cout << "average path length of queries: " << tree_sep.average_path_length() << std::endl;
 
-        std::cout << "MSE of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
+        std::cout << "Average error ratio of linear separator-induced graph to the reference graph is: " << similarity << std::endl;
         std::cout << std::endl;
 
-        start = std::chrono::high_resolution_clock::now();
+        /*start = std::chrono::high_resolution_clock::now();
         auto random_from_tree = random_weights(tree);
         elapsed = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: randomizing weights took " << elapsed.count() << " seconds ::" << std::endl;
 
         start      = std::chrono::high_resolution_clock::now();
-        similarity = oracle->similarity(random_from_tree);
+        similarity = oracle->similarity_random(random_from_tree);
         elapsed    = std::chrono::high_resolution_clock::now() - start;
         std::cout << ":: computing similarity took " << elapsed.count() << " seconds ::" << std::endl;
 
         std::cout << "MSE of reference graph but with random weights to the reference itself is: "
-                  << similarity << std::endl;
+                  << similarity << std::endl;*/
     }
 
     else if (operation_mode == Planar) {
         std::cerr << "Not implemented yet." << std::endl;
+        return 1;
     }
 
     return 0;
